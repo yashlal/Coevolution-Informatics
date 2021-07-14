@@ -47,7 +47,7 @@ def filter_stable_sites(prob_list, epsilon):
     return indices, new_prob_list
 
 #creates a list of 3-element lists where the first two elements are the corresponding column indices and the third is the I/min value
-#for the future we can merge these lists and keep the last element to be the sorting value
+#for the future we can merge these lists and keep the last element (index= -1) to be the sorting value
 def gen_mut_inf_mat(indices, prob_list):
     ln = len(prob_list)
     pbar3 = tqdm(range(ln))
@@ -61,8 +61,4 @@ def gen_mut_inf_mat(indices, prob_list):
     return sorted(mut_inf_list, key=lambda x:x[-1])
 
 if __name__=='__main__':
-    epsilon = 0.1
-    prob_list = calc_probs(data_list=data_list[1000:1200])
-    stable_indices, filtered_prob_list = filter_stable_sites(prob_list, epsilon)
-    sorted_inf = gen_mut_inf_mat(stable_indices, filtered_prob_list)
-    print(sorted_inf)
+    proper_data_list = preprocessing(data_list)
