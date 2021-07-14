@@ -2,14 +2,12 @@ from Bio import SeqIO
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
-from numba import njit
+from modules import *
 
 data_list = []
 data = SeqIO.parse("data/SILVA_138.1_Fusobacteriota.fasta","fasta")
 for sample in data:
     data_list.append(sample.seq)
-
-
 
 edgecases = ['.', '-', 'N', 'Y', 'M', 'S', 'K', 'R', 'W', 'V']
 dict = {'A': 0, 'G':1, 'C':2, 'T':3}
@@ -35,18 +33,18 @@ def calc_probs(data_list):
     return prob
 
 # returns list of all entropy values
-# entropy is shannon entropy with logbase e
 def get_entr(prob_list):
     pbar2 = tqdm(range(len(prob_list)))
     pbar2.set_description('Calculating Entropies')
     entr_list = []
     for i in pbar2:
-        s = 0
-        for el in prob_list[i]:
-            if el!=0:
-                s -= (el*np.log(el))
-        entr_list.append(s)
+        entr_list.append(shannon_entr(prob_list[i]))
     return entr_list
 
-prob_list = calc_probs(data_list=data_list[12000:20000])
-entr_list = get_entr(prob_list=prob_list)
+#select unstable sites with H(X) ≥ ε
+def select_unstable_sites(entropy_list, epsilon):
+    return [x for x in entropy_list if x>=epsilon]
+
+if __name__=='__main__':
+    prob_list = calc_probs(data_list=data_list[12000:20000])
+    entr_list = get_entr(prob_list=prob_list)
