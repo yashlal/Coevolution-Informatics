@@ -32,19 +32,37 @@ def calc_probs(data_list):
 
     return prob
 
-# returns list of all entropy values
-def get_entr(prob_list):
+# returns dictionary where key is index and value is the probability
+# only consider sites where H(X) > epsilon
+def filter_stable_sites(prob_list, epsilon):
     pbar2 = tqdm(range(len(prob_list)))
-    pbar2.set_description('Calculating Entropies')
-    entr_list = []
+    pbar2.set_description('Generating Filtered Data')
+    indices = []
+    new_prob_list = []
     for i in pbar2:
-        entr_list.append(shannon_entr(prob_list[i]))
-    return entr_list
+        se = shannon_entr(prob_list[i])
+        if se>epsilon:
+            new_prob_list.append(prob_list[i])
+            indices.append(i)
+    return indices, new_prob_list
 
-#select unstable sites with H(X) ≥ ε
-def select_unstable_sites(entropy_list, epsilon):
-    return [x for x in entropy_list if x>=epsilon]
+#creates a list of 3-element lists where the first two elements are the corresponding column indices and the third is the I/min value
+#for the future we can merge these lists and keep the last element to be the sorting value
+def gen_mut_inf_mat(indices, prob_list):
+    ln = len(prob_list)
+    pbar3 = tqdm(range(ln))
+    pbar3.set_description('Generating MI Matrix')
+    mut_inf_list = []
+    for i in pbar3:
+        for j in range(i):
+            minimum = min(shannon_entr(prob_list[i]), shannon_entr(prob_list[j]))
+            mut_inf_list.append([indices[i], indices[j], (mutual_inf(prob_list[i], prob_list[j]) / minimum)])
+    #sort by last value
+    return sorted(mut_inf_list, key=lambda x:x[-1])
 
 if __name__=='__main__':
-    prob_list = calc_probs(data_list=data_list[12000:20000])
-    entr_list = get_entr(prob_list=prob_list)
+    epsilon = 0.1
+    prob_list = calc_probs(data_list=data_list[1000:1200])
+    stable_indices, filtered_prob_list = filter_stable_sites(prob_list, epsilon)
+    sorted_inf = gen_mut_inf_mat(stable_indices, filtered_prob_list)
+    print(sorted_inf)
