@@ -23,7 +23,7 @@ def joint_entr(*args):
     for row in zip(*args):
         ind_l = []
         for el in row:
-            ar[bases_dict[el]] += 1
+            ind_l.append([bases_dict[el]])
         ar[tuple(ind_l)] += 1
     ar = ar / (len(args[0]))
     #this line prevents log(0)= -infinity errors
