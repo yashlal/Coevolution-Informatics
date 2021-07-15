@@ -1,16 +1,16 @@
 import numpy as np
 
-edgecases = ['.', '-', 'N', 'Y', 'M', 'S', 'K', 'R', 'W', 'V']
-dict = {'A': 0, 'G':1, 'C':2, 'T':3}
-l = ['A', 'G', 'C', 'T']
+bases_dict = {'A': 0, 'G':1, 'C':2, 'T':3, '.':4, '-':4, 'N':4, 'Y':4, 'M':4, 'S':4, 'K':4, 'R':4, 'W':4, 'V':4}
 
-# entropy is shannon entropy with logbase e
-def shannon_entr(l):
-    sh_entr = 0
-    for el in l:
-        if el!=0:
-            sh_entr -= el*np.log2(el)
-    return sh_entr
+
+# entropy is shannon entropy with logbase 2
+def shannon_entr(col):
+    ar = np.zeros(5)
+    for el in col:
+        ar[bases_dict[el]] += 1
+    ar = ar/len(col)
+    entr = np.sum(-ar*np.log2(ar, where=(ar!=0)))
+    return entr
 
 # Calculate H(X,Y) (joint entropy) where *args is any n columns, the zip function forms a row iterator
 # The idea is that again we can convert AGCTB into indices 01234 so eg if we have 3 columns then we store the probabilities in a 5,5,5 size array
@@ -23,12 +23,19 @@ def joint_entr(*args):
     for row in zip(*args):
         ind_l = []
         for el in row:
-            if el in edgecases:
-                ind_l.append(4)
-            else:
-                ind_l.append(dict[el])
+            ar[bases_dict[el]] += 1
         ar[tuple(ind_l)] += 1
     ar = ar / (len(args[0]))
     #this line prevents log(0)= -infinity errors
     entr = np.sum(-ar*np.log2(ar, where=(ar!=0)))
     return entr
+
+# X and Y are lists where each element in the list is a columns eg if we had AGC and no others columns then X = [['A', 'G', 'C']]
+# Even when one column is present we want the double list for preserving star operator functionality and for consistency
+# Function returns mutual information normalized by division by the minimum of H_x and H_y
+def mutual_inf(X, Y):
+    H_x = joint_entr(*X)
+    H_y = joint_entr(*Y)
+    H_xy = joint_entr(*X, *Y)
+    minimum = min(H_x, H_y)
+    return ((H_x+H_y-H_xy)/minimum)
