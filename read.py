@@ -42,7 +42,7 @@ def gen_mut_inf_mat(indices, cols):
 
 if __name__=='__main__':
     epsilon = 0.0232
-    indices, proper_data = filter_stable_sites(data=data_list[10000:12000], epsilon=epsilon)
+    indices, proper_data = filter_stable_sites(data=data_list, epsilon=epsilon)
     print(len(indices))
     init_sorted = gen_mut_inf_mat(indices[-10:], proper_data[-10:])
     print(init_sorted)
