@@ -44,5 +44,7 @@ def mutual_inf(X, Y):
     minimum = min(H_x, H_y)
     return ((H_x+H_y-H_xy)/minimum)
 
-flatten = lambda *n: (e for a in n
-    for e in (flatten(*a) if isinstance(a, (tuple, list)) else (a,)))
+# this is a bit of wizardry that takes a list or tupl with any degree of nesting (irregular) or not and flattens it
+# ie list(flatten([1,2,3,[4,5,[6,[7,[8]]]]])) returns [1,2,3,4,5,6,7,8]
+# is useful for the disjoin testing in the algorithm when removing old MI terms
+flatten = lambda *n: (e for a in n for e in (flatten(*a) if isinstance(a, (tuple, list)) else (a,)))

@@ -6,10 +6,10 @@ import numpy as np
 from tqdm import tqdm
 from modules import *
 
-# data_list = []
-# data = SeqIO.parse("data/SILVA_138.1_Fusobacteriota.fasta","fasta")
-# for sample in data:
-#   data_list.append(str(sample.seq))
+data_list = []
+data = SeqIO.parse("data/SILVA_138.1_Fusobacteriota.fasta","fasta")
+for sample in data:
+  data_list.append(str(sample.seq))
 
 # returns dictionary where key is index and value is the probability
 # only consider sites where H(X) > epsilon
@@ -43,7 +43,10 @@ def gen_mut_inf_mat(indices, cols):
 
 def alg(MI_list, gamma, indices, cols):
     t = 0
-    while t<4:
+    while (len(MI_list)>0) and (MI_list[-1][-1]>gamma):
+        start = time.time()
+        print(f'On time t={t}')
+        print(f'Max MI Term is {MI_list[-1][-1]}')
         #join the sites
         ind_bound_site = []
         cols_bound_site = []
@@ -77,14 +80,15 @@ def alg(MI_list, gamma, indices, cols):
             mut_inf_ = mutual_inf(cols[k], cols[-1])
             MI_list.append([indices[k], indices[-1], mut_inf_])
 
+        MI_list = sorted(MI_list, key=lambda x:x[-1])
+        print(time.time()-start)
         t += 1
-
     return MI_list, indices, cols
 
 if __name__=='__main__':
-    epsilon = 0.0232
-    data_list = [['A','G','G','-','K'], ['C','C','T','T', '.'], ['-','-','-','-','-'], ['T','C','G','A', 'G'], ['A','A','C','C','T']]
-    indices, cols = filter_stable_sites(data=data_list, epsilon=epsilon)
-    mi = gen_mut_inf_mat(indices=indices, cols=cols)
-    new_mi, new_inds, new_cols = alg(mi, 0.1, indices, cols)
-    print(new_mi, new_inds, new_cols)
+    epsilon, gamma = 0.0232, 0.75
+    inds, cols = filter_stable_sites(data=data_list[12000:15000], epsilon=epsilon)
+    print(len(inds))
+    mi_init = gen_mut_inf_mat(indices=inds[0:20], cols=cols[0:20])
+    mi_final, inds_final, cols_final = alg(MI_list=mi_init, gamma=gamma, indices=inds, cols=cols)
+    print(mi_final, inds_final)
