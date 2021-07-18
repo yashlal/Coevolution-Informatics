@@ -26,16 +26,22 @@ def joint_entr(*args):
             ind_l.append([bases_dict[el]])
         ar[tuple(ind_l)] += 1
     ar = ar / (len(args[0]))
+    print(ar)
     #this line prevents log(0)= -infinity errors
-    entr = np.sum(-ar*np.log2(ar, where=(ar!=0)))
+    entr = np.sum(-ar*np.log2(ar, out=np.zeros_like(ar), where=(ar!=0)))
     return entr
 
 # X and Y are lists where each element in the list is a columns eg if we had AGC and no others columns then X = [['A', 'G', 'C']]
 # Even when one column is present we want the double list for preserving star operator functionality and for consistency
 # Function returns mutual information normalized by division by the minimum of H_x and H_y
 def mutual_inf(X, Y):
+    if type(X[0])!=list:
+        X=[X]
+    if type(Y[0])!=list:
+        Y=[Y]
     H_x = joint_entr(*X)
     H_y = joint_entr(*Y)
     H_xy = joint_entr(*X, *Y)
+    print(H_x,H_y,H_xy)
     minimum = min(H_x, H_y)
     return ((H_x+H_y-H_xy)/minimum)
