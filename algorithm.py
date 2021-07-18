@@ -43,6 +43,8 @@ def gen_mut_inf_mat(indices, cols):
 
 def alg(MI_list, gamma, indices, cols):
     t = 0
+    print('\n')
+    print('Beginning Algorithm\n')
     while (len(MI_list)>0) and (MI_list[-1][-1]>gamma):
         start = time.time()
         print(f'On time t={t}')
@@ -81,14 +83,15 @@ def alg(MI_list, gamma, indices, cols):
             MI_list.append([indices[k], indices[-1], mut_inf_])
 
         MI_list = sorted(MI_list, key=lambda x:x[-1])
-        print(time.time()-start)
+        print(f'Iteration took {round((time.time()-start), 3)} seconds')
+        print("\n")
         t += 1
     return MI_list, indices, cols
 
 if __name__=='__main__':
     epsilon, gamma = 0.0232, 0.75
     inds, cols = filter_stable_sites(data=data_list[12000:15000], epsilon=epsilon)
-    print(len(inds))
+    print(f'{len(inds)} Unstable Sites Found!')
     mi_init = gen_mut_inf_mat(indices=inds[0:20], cols=cols[0:20])
     mi_final, inds_final, cols_final = alg(MI_list=mi_init, gamma=gamma, indices=inds, cols=cols)
     print(mi_final, inds_final)
