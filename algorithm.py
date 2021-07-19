@@ -1,6 +1,5 @@
 from tqdm import tqdm
 from Bio import SeqIO
-import pandas as pd
 import time
 import numpy as np
 from tqdm import tqdm
