@@ -13,6 +13,8 @@ def shannon_entr(col):
     return entr
 
 # Calculate H(X,Y) (joint entropy) where *args is any n columns, the zip function forms a row iterator
+# 1/len(args[0]) is the prob of 1 divided by number of rows, added each time a rows is encountered
+# the try except steps the probability of a row if it exists else it adds it
 def joint_entr(*args):
     prob_dict = {}
     entr = 0

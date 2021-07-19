@@ -101,10 +101,10 @@ def alg(MI_list, gamma, indices, cols):
     return MI_list, indices, cols
 
 if __name__=='__main__':
-    epsilon, gamma = 0.0232, 0.75
+    epsilon, gamma = 0.0232, 0.50
     prcsd_data = preprocess(data_list)
-    inds, cols = filter_stable_sites(data=prcsd_data[12000:15000], epsilon=epsilon)
+    inds, cols = filter_stable_sites(data=prcsd_data, epsilon=epsilon)
     print(f'{len(inds)} Unstable Sites Found!')
-    mi_init = gen_mut_inf_mat(indices=inds[0:20], cols=cols[0:20])
+    mi_init = gen_mut_inf_mat(indices=inds, cols=cols)
     mi_final, inds_final, cols_final = alg(MI_list=mi_init, gamma=gamma, indices=inds, cols=cols)
     print(mi_final, inds_final)
