@@ -2,3 +2,4 @@ BioPython
 numpy
 tqdm
 time
+sklearn

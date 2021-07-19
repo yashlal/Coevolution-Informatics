@@ -1,6 +1,6 @@
 import numpy as np
 
-bases_dict = {'A': 0, 'G':1, 'C':2, 'T':3, '.':4, '-':4, 'N':4, 'Y':4, 'M':4, 'S':4, 'K':4, 'R':4, 'W':4, 'V':4}
+bases_dict = {'A': 0, 'G':1, 'C':2, 'T':3, 'B':4, '.':4, '-':4, 'N':4, 'Y':4, 'M':4, 'S':4, 'K':4, 'R':4, 'W':4, 'V':4}
 
 
 # entropy is shannon entropy with logbase 2

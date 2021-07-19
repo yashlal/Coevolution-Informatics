@@ -17,8 +17,9 @@ def preprocess(data):
     pbar_prcs = tqdm(range(len(data)))
     pbar_prcs.set_description('Preprocessing Data Blanks')
     for ind in pbar_prcs:
+        new_s = data[ind]
         for char in problems:
-            new_s = data[ind].replace(char, 'B')
+            new_s = new_s.replace(char, 'B')
         new_data.append(new_s)
     return new_data
 
@@ -29,10 +30,7 @@ def filter_stable_sites(data, epsilon):
     pbar.set_description('Generating Filtered Data')
     indices = []
     new_data = []
-    t1 = 0
-    t2 = 0
     for i in pbar:
-        start = time.time()
         col = [x[i] for x in data]
         se = shannon_entr(col)
         if se>epsilon:
