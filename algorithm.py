@@ -4,8 +4,11 @@ import time
 import numpy as np
 from tqdm import tqdm
 from modules import *
+import csv
+import matplotlib.pyplot as plt
 
 problems = ['.', '-', 'N', 'Y', 'M', 'S', 'K', 'R', 'W', 'V']
+bases_dict = {'A': 0, 'G':1, 'C':2, 'T':3, 'B':4, '.':4, '-':4, 'N':4, 'Y':4, 'M':4, 'S':4, 'K':4, 'R':4, 'W':4, 'V':4}
 
 data_list = []
 data = SeqIO.parse("data/SILVA_138.1_Fusobacteriota.fasta","fasta")
@@ -50,14 +53,26 @@ def gen_mut_inf_mat(indices, cols):
             init_u.append([indices[i], indices[j], mut_inf_ij])
     return sorted(init_u, key=lambda x:x[-1])
 
+fields = ['MI_max_term']
+with open('output.csv', 'w') as f:
+    csvwriter = csv.writer(f)
+    csvwriter.writerow(fields)
+
 def alg(MI_list, gamma, indices, cols):
     t = 0
+    max_values = []
     print('\n')
     print('Beginning Algorithm\n')
-    while (len(MI_list)>0) and (MI_list[-1][-1]>gamma):
+    while (len(MI_list)>0) and (MI_list[-1][-1]>=gamma):
+        max_values.append(MI_list[-1][-1])
         start = time.time()
         print(f'On time t={t}')
         print(f'Max MI Term is {MI_list[-1][-1]}')
+
+        with open('output.csv', 'a') as f:
+            csvwriter = csv.writer(f)
+            csvwriter.writerow([MI_list[-1][-1]])
+
         #join the sites
         ind_bound_site = []
         cols_bound_site = []
@@ -92,16 +107,21 @@ def alg(MI_list, gamma, indices, cols):
             MI_list.append([indices[k], indices[-1], mut_inf_])
 
         MI_list = sorted(MI_list, key=lambda x:x[-1])
+
         print(f'Iteration took {round((time.time()-start), 3)} seconds')
         print("\n")
+
         t += 1
-    return MI_list, indices, cols
+    return MI_list, indices, cols, max_values
 
 if __name__=='__main__':
-    epsilon, gamma = 0.0232, 0.50
+    epsilon, gamma = 0.0232, 0.75
     prcsd_data = preprocess(data_list)
-    inds, cols = filter_stable_sites(data=prcsd_data, epsilon=epsilon)
+    inds, cols = filter_stable_sites(data=prcsd_data[12000:15000], epsilon=epsilon)
     print(f'{len(inds)} Unstable Sites Found!')
     mi_init = gen_mut_inf_mat(indices=inds, cols=cols)
-    mi_final, inds_final, cols_final = alg(MI_list=mi_init, gamma=gamma, indices=inds, cols=cols)
+    mi_final, inds_final, cols_final, mv = alg(MI_list=mi_init, gamma=gamma, indices=inds, cols=cols)
     print(mi_final, inds_final)
+    plt.plot(mv)
+    plt.savefig('MaxValues.png')
+    plt.show()
