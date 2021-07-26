@@ -4,7 +4,6 @@ import time
 import numpy as np
 from tqdm import tqdm
 from modules import *
-import csv
 import matplotlib.pyplot as plt
 
 problems = ['.', '-', 'N', 'Y', 'M', 'S', 'K', 'R', 'W', 'V']
@@ -53,11 +52,6 @@ def gen_mut_inf_mat(indices, cols):
             init_u.append([indices[i], indices[j], mut_inf_ij])
     return sorted(init_u, key=lambda x:x[-1])
 
-fields = ['MI_max_term']
-with open('output.csv', 'w') as f:
-    csvwriter = csv.writer(f)
-    csvwriter.writerow(fields)
-
 def alg(MI_list, gamma, indices, cols):
     t = 0
     max_values = []
@@ -68,10 +62,6 @@ def alg(MI_list, gamma, indices, cols):
         start = time.time()
         print(f'On time t={t}')
         print(f'Max MI Term is {MI_list[-1][-1]}')
-
-        with open('output.csv', 'a') as f:
-            csvwriter = csv.writer(f)
-            csvwriter.writerow([MI_list[-1][-1]])
 
         #join the sites
         ind_bound_site = []
