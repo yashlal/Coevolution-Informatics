@@ -52,7 +52,10 @@ def gen_mut_inf_mat(indices, cols):
             init_u.append([indices[i], indices[j], mut_inf_ij])
     return sorted(init_u, key=lambda x:x[-1])
 
-def alg(MI_list, gamma, indices, cols):
+def alg(MI_list_, gamma, indices_, cols_):
+    MI_list = MI_list_.copy()
+    indices = indices_.copy()
+    cols = cols_.copy()
     t = 0
     max_values = []
     print('\n')
