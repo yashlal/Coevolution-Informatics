@@ -24,8 +24,8 @@ if __name__=='__main__':
     print(f'{len(inds)} Unstable Sites Found!')
 
     mi_init = gen_mut_inf_mat(indices=inds, cols=cols)
-    gamma = 0.75
-    for step in range(5):
+    gamma = 0.70
+    for step in range(6):
         mi_final, inds_final, cols_final, mv = alg(MI_list_=mi_init, gamma=gamma, indices_=inds, cols_=cols)
         results_dict[gamma] = inds_final
         gamma += 0.05

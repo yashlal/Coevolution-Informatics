@@ -8,6 +8,7 @@ import csv
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
+import histograms
 
 problems = ['.', '-', 'N', 'Y', 'M', 'S', 'K', 'R', 'W', 'V']
 bases_dict = {'A': 0, 'G':1, 'C':2, 'T':3, 'B':4, '.':4, '-':4, 'N':4, 'Y':4, 'M':4, 'S':4, 'K':4, 'R':4, 'W':4, 'V':4}
@@ -52,13 +53,14 @@ def numericalize(cols):
     return new_cols
 
 if __name__=='__main__':
-    epsilon, gamma = 0.0232, 0.5
+    lns = histograms.main()
+    epsilon = 0.0232
     path = 'KMC.csv'
 
     prcsd_data = preprocess(data_list)
     inds, cols = filter_stable_sites(data=prcsd_data, epsilon=epsilon)
-
     new_cols = numericalize(cols)
+    
     print('Running PCA')
     transformed_data = PCA(n_components=2).fit_transform(new_cols)
     print('Running KMC')
