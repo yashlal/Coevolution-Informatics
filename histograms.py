@@ -7,21 +7,15 @@ with open('gamma_steps.pickle', 'rb') as handle:
 def main():
     list_n_sites = []
     for x in range(1,6):
-
+        sites = [_ for _ in list(b.values())[x] if type(_)==list]
         gamma = round(list(b.items())[x][0], 2)
-        n_sites = len(list(b.values())[x])
+        n_sites = len(sites)
         list_n_sites.append(n_sites)
 
-        hist_dict = {1:0}
+        hist_dict = {}
 
-        for site in list(b.values())[x]:
-            if type(site)!=list:
-                hist_dict[1] += 1
-            else:
-                try:
-                    hist_dict[len(site)] += 1
-                except KeyError:
-                    hist_dict[len(site)] = 1
+        for site in sites:
+            hist_dict[len(site)] = hist_dict.get(len(site), 0) + 1
 
         print(gamma, hist_dict)
 
@@ -31,6 +25,7 @@ def main():
         plt.ylabel('Number of Sites')
         plt.savefig(f'Plots/AlgGamma{gamma}.png')
         plt.clf()
+
     return list_n_sites
 
 if __name__=='__main__':

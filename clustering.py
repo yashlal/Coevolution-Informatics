@@ -60,17 +60,11 @@ if __name__=='__main__':
     prcsd_data = preprocess(data_list)
     inds, cols = filter_stable_sites(data=prcsd_data, epsilon=epsilon)
     new_cols = numericalize(cols)
-    
+
     print('Running PCA')
     transformed_data = PCA(n_components=2).fit_transform(new_cols)
-    print('Running KMC')
-    labels = KMeans().fit_predict(transformed_data)
 
-    fields = ['Column Index', 'KMC Cluster']
-    rows = []
-    for i in range(len(labels)):
-        rows.append([inds[i], labels[i]])
-    with open(path, 'w') as f:
-        writer = csv.writer(f)
-        writer.writerow(fields)
-        writer.writerows(rows)
+    for n_clus in lns:
+        print(f'Running KMC with {n_clus} Clusters')
+        labels = KMeans(n_clusters=n_clus).fit_predict(transformed_data)
+        print(len(labels))
