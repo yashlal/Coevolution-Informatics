@@ -9,10 +9,12 @@ import matplotlib.pyplot as plt
 problems = ['.', '-', 'N', 'Y', 'M', 'S', 'K', 'R', 'W', 'V']
 bases_dict = {'A': 0, 'G':1, 'C':2, 'T':3, 'B':4, '.':4, '-':4, 'N':4, 'Y':4, 'M':4, 'S':4, 'K':4, 'R':4, 'W':4, 'V':4}
 
-data_list = []
-data = SeqIO.parse("data/SILVA_138.1_Fusobacteriota.fasta","fasta")
-for sample in data:
-  data_list.append(str(sample.seq))
+def getdata(path):
+    data_list = []
+    data = SeqIO.parse(path,"fasta")
+    for sample in data:
+        data_list.append(str(sample.seq))
+    return data_list
 
 def preprocess(data):
     new_data = []
@@ -109,12 +111,16 @@ def alg(MI_list_, gamma, indices_, cols_):
 
 if __name__=='__main__':
     epsilon, gamma = 0.0232, 0.5
+
+    data_list = getdata('data/SILVA_138.1_Fusobacteriota.fasta')
     prcsd_data = preprocess(data_list)
     inds, cols = filter_stable_sites(data=prcsd_data, epsilon=epsilon)
+
     print(f'{len(inds)} Unstable Sites Found!')
     mi_init = gen_mut_inf_mat(indices=inds, cols=cols)
-    mi_final, inds_final, cols_final, mv = alg(MI_list=mi_init, gamma=gamma, indices=inds, cols=cols)
+    mi_final, inds_final, cols_final, mv = alg(MI_list_=mi_init, gamma=gamma, indices_=inds, cols_=cols)
     print(mi_final, inds_final)
+
     plt.plot(mv)
     plt.savefig('MaxValues.png')
     plt.show()

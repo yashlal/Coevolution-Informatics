@@ -5,11 +5,11 @@ bases_dict = {'A': 0, 'G':1, 'C':2, 'T':3, 'B':4, '.':4, '-':4, 'N':4, 'Y':4, 'M
 
 # entropy is shannon entropy with logbase 2
 def shannon_entr(col):
-    ar = np.zeros(5)
-    for el in col:
-        ar[bases_dict[el]] += 1
-    ar = ar/len(col)
-    entr = np.sum(-ar*np.log2(ar, where=(ar!=0)))
+    l = [0,0,0,0,0]
+    itr_amnt = 1/len(col)
+    for x in col:
+        l[bases_dict[x]] += itr_amnt
+    entr = sum([-v*np.log2(v) for v in l if v])
     return entr
 
 # Calculate H(X,Y) (joint entropy) where *args is any n columns, the zip function forms a row iterator
@@ -20,12 +20,8 @@ def joint_entr(*args):
     entr = 0
     for row in zip(*args):
         s = ''.join(row)
-        try:
-            prob_dict[s] += 1/len(args[0])
-        except KeyError:
-            prob_dict[s] = 1/len(args[0])
-    for el in prob_dict.values():
-        entr += -el*(np.log2(el))
+        prob_dict[s] = prob_dict.get(s,0) + 1
+    entr = sum([-el*(np.log2(el)) for el in prob_dict.values()])
     return entr
 
 # X and Y are lists where each element in the list is a columns eg if we had AGC and no others columns then X = [['A', 'G', 'C']]
@@ -42,7 +38,8 @@ def mutual_inf(X, Y):
     minimum = min(H_x, H_y)
     return ((H_x+H_y-H_xy)/minimum)
 
-# this is a bit of wizardry that takes a list or tupl with any degree of nesting (irregular) or not and flattens it
+# this is a bit of StackOverflow wizardry that takes a list or tuple with any degree of nesting and flattens it
 # ie list(flatten([1,2,3,[4,5,[6,[7,[8]]]]])) returns [1,2,3,4,5,6,7,8]
 # is useful for the disjoint testing in the algorithm when removing old MI terms
+# Credit to  samplebias from https://stackoverflow.com/questions/2158395/flatten-an-irregular-list-of-lists
 flatten = lambda *n: (e for a in n for e in (flatten(*a) if isinstance(a, (tuple, list)) else (a,)))
