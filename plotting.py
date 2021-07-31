@@ -7,7 +7,7 @@ import algorithm
 import modules
 import time
 
-with open('gamma_steps.pickle', 'rb') as handle:
+with open('Results/FusobacteriotaResults.pickle', 'rb') as handle:
     b = pickle.load(handle)
 
 # converts columns values to numbers to do PCA + clustering
@@ -60,7 +60,7 @@ def algplots(new_cols):
         labels = list(colors.keys())
         handles = [plt.Rectangle((0,0),1,1, color=colors[label]) for label in labels]
         plt.legend(handles, labels)
-        plt.savefig(f'Plots/FusobacteriotaGamma{gamma}.png')
+        plt.savefig(f'Plots/Fusobacteriota/FusobacteriotaGamma{gamma}.png')
         plt.clf()
 
 

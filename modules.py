@@ -20,7 +20,7 @@ def joint_entr(*args):
     entr = 0
     for row in zip(*args):
         s = ''.join(row)
-        prob_dict[s] = prob_dict.get(s,0) + 1
+        prob_dict[s] = prob_dict.get(s,0) + (1/len(args[0]))
     entr = sum([-el*(np.log2(el)) for el in prob_dict.values()])
     return entr
 
@@ -43,3 +43,17 @@ def mutual_inf(X, Y):
 # is useful for the disjoint testing in the algorithm when removing old MI terms
 # Credit to  samplebias from https://stackoverflow.com/questions/2158395/flatten-an-irregular-list-of-lists
 flatten = lambda *n: (e for a in n for e in (flatten(*a) if isinstance(a, (tuple, list)) else (a,)))
+
+# a form of the MI function that allows multiprocessing
+def mutual_inf_MP(X, Y, ind1, ind2):
+    if type(X[0])!=list:
+        X=[X]
+    if type(Y[0])!=list:
+        Y=[Y]
+    H_x = joint_entr(*X)
+    H_y = joint_entr(*Y)
+    H_xy = joint_entr(*X, *Y)
+    minimum = min(H_x, H_y)
+    calc = ((H_x+H_y-H_xy)/minimum)
+
+    return [ind1, ind2, calc]

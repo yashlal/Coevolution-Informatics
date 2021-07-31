@@ -10,14 +10,14 @@ def get_data():
         data_list.append(str(sample.seq))
     return data_list
 
-
 if __name__=='__main__':
     results_dict = {}
+    species = 'Fusobacteriota'
 
     data_list = get_data()
 
-    filename = 'gamma_steps.pickle'
-    epsilon = 0.0232
+    epsilon = 0.00232
+    filename = f'Results/{species}Results_E_{epsilon}.pickle'
 
     prcsd_data = preprocess(data_list)
     inds, cols = filter_stable_sites(data=prcsd_data, epsilon=epsilon)
@@ -29,6 +29,8 @@ if __name__=='__main__':
         mi_final, inds_final, cols_final, mv = alg(MI_list_=mi_init, gamma=gamma, indices_=inds, cols_=cols)
         results_dict[gamma] = inds_final
         gamma += 0.05
+        plt.plot(mv)
+        plt.savefig(f'Plots/Dump/S_{species}_E_{epsilon}_G_{gamma}.png')
 
 
     with open(filename, 'wb') as handle:
