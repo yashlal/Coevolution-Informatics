@@ -1,6 +1,7 @@
 import numpy as np
+from collections import Counter
 
-bases_dict = {'A': 0, 'G':1, 'C':2, 'T':3, 'B':4, '.':4, '-':4, 'N':4, 'Y':4, 'M':4, 'S':4, 'K':4, 'R':4, 'W':4, 'V':4}
+bases_dict = {'A': 0, 'G':1, 'C':2, 'T':3, 'B':4, '.':4, '-':4, 'N':4, 'Y':4, 'M':4, 'S':4, 'K':4, 'R':4, 'W':4, 'V':4, 'D':4, 'H':4}
 
 
 # entropy is shannon entropy with logbase 2
@@ -41,7 +42,7 @@ def mutual_inf(X, Y):
 # this is a bit of StackOverflow wizardry that takes a list or tuple with any degree of nesting and flattens it
 # ie list(flatten([1,2,3,[4,5,[6,[7,[8]]]]])) returns [1,2,3,4,5,6,7,8]
 # is useful for the disjoint testing in the algorithm when removing old MI terms
-# Credit to  samplebias from https://stackoverflow.com/questions/2158395/flatten-an-irregular-list-of-lists
+# Credit to samplebias from https://stackoverflow.com/questions/2158395/flatten-an-irregular-list-of-lists
 flatten = lambda *n: (e for a in n for e in (flatten(*a) if isinstance(a, (tuple, list)) else (a,)))
 
 # a form of the MI function that allows multiprocessing
@@ -57,3 +58,8 @@ def mutual_inf_MP(X, Y, ind1, ind2):
     calc = ((H_x+H_y-H_xy)/minimum)
 
     return [ind1, ind2, calc]
+
+def inv_across_envs(*args):
+    cnt = Counter(flatten(args))
+    shared_items = [k for k, v in cnt.items() if v > 1]
+    return shared_items

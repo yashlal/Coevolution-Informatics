@@ -6,9 +6,10 @@ from tqdm import tqdm
 from modules import *
 import matplotlib.pyplot as plt
 import multiprocessing
+from itertools import combinations
 
-problems = ['.', '-', 'N', 'Y', 'M', 'S', 'K', 'R', 'W', 'V']
-bases_dict = {'A': 0, 'G':1, 'C':2, 'T':3, 'B':4, '.':4, '-':4, 'N':4, 'Y':4, 'M':4, 'S':4, 'K':4, 'R':4, 'W':4, 'V':4}
+problems = ['.', '-', 'N', 'Y', 'M', 'S', 'K', 'R', 'W', 'V', 'D', 'H']
+bases_dict = {'A': 0, 'G':1, 'C':2, 'T':3, 'B':4, '.':4, '-':4, 'N':4, 'Y':4, 'M':4, 'S':4, 'K':4, 'R':4, 'W':4, 'V':4, 'D':4, 'H':4}
 
 def getdata(path):
     data_list = []
@@ -31,7 +32,7 @@ def preprocess(data):
 # returns dictionary where key is index and value is the probability
 # only consider sites where H(X) > epsilon
 def filter_stable_sites(data, epsilon):
-    pbar = tqdm(range(len(data)))
+    pbar = tqdm(range(len(data[0])))
     pbar.set_description('Generating Filtered Data')
     indices = []
     new_data = []
@@ -54,6 +55,16 @@ def gen_mut_inf_mat(indices, cols):
             mut_inf_ij = mutual_inf(cols[i], cols[j])
             init_u.append([indices[i], indices[j], mut_inf_ij])
     return sorted(init_u, key=lambda x:x[-1])
+
+def mutinf_setup(indices, cols):
+    lg = len(indices)
+    custom_indices = combinations(list(range(lg)),2)
+    myargs = [(cols[tup1], cols[tup2], indices[tup1], indices[tup2]) for tup1, tup2 in custom_indices]
+
+    with multiprocessing.Pool() as pool:
+        MI_calcs = pool.starmap(mutual_inf_MP, myargs)
+
+    return MI_calcs
 
 def alg(MI_list_, gamma, indices_, cols_):
     MI_list = MI_list_.copy()
@@ -119,10 +130,5 @@ if __name__=='__main__':
     inds, cols = filter_stable_sites(data=prcsd_data, epsilon=epsilon)
 
     print(f'{len(inds)} Unstable Sites Found!')
-    mi_init = gen_mut_inf_mat(indices=inds, cols=cols)
+    mi_init = mutinf_setup(indices=inds, cols=cols)
     mi_final, inds_final, cols_final, mv = alg(MI_list_=mi_init, gamma=gamma, indices_=inds, cols_=cols)
-    # print(mi_final, inds_final)
-
-    # plt.plot(mv)
-    # plt.savefig('MaxValues.png')
-    # plt.show()
