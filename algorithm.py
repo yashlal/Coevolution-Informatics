@@ -66,20 +66,32 @@ def mutinf_setup(indices, cols):
 
     return MI_calcs
 
-def alg(MI_list_, gamma, indices_, cols_):
+def alg(MI_list_, indices_, cols_, gammas_):
+    gammas_ = sorted(gammas_, reverse=True)
+    gamma_ind = 0
+    results_dict = {}
+
     MI_list = MI_list_.copy()
     indices = indices_.copy()
     cols = cols_.copy()
+
     t = 0
     max_values = []
+
     print('\n')
     print('Beginning Algorithm\n')
-    while (len(MI_list)>0) and (MI_list[-1][-1]>=gamma):
-    # while t<=25:
+
+    while (len(MI_list)>0) and (gamma_ind<len(gammas_)):
+
         max_values.append(MI_list[-1][-1])
         start = time.time()
+
         print(f'On time t={t}')
         print(f'Max MI Term is {MI_list[-1][-1]}')
+
+        if max_values[-1] < gammas_[gamma_ind]:
+            results_dict[gammas_[gamma_ind]] = indices.copy()
+            gamma_ind += 1
 
         #join the sites
         ind_bound_site = []
@@ -106,29 +118,37 @@ def alg(MI_list_, gamma, indices_, cols_):
             f2 = list(flatten(j[:-1]))
             if not f1.isdisjoint(f2):
                 MI_list.remove(j)
-        t2 = time.time()
 
         myargs = [(cols[-1], cols[k], indices[k], indices[-1]) for k in range(len(cols)-1)]
         with multiprocessing.Pool() as pool:
             results = pool.starmap(mutual_inf_MP, myargs)
-        t3 = time.time()
         MI_list = sorted(results, key=lambda x:x[-1])
 
         print(f'Iteration took {round((time.time()-start), 3)} seconds')
-        print(t2-start, t3-t2)
         print("\n")
 
-
         t += 1
-    return MI_list, indices, cols, max_values
+
+    return results_dict, max_values
 
 if __name__=='__main__':
-    epsilon, gamma = 0.0232, 0.5
+    epsilon, gammas = 0.0232, [0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+    species = 'Fusobacteriota'
+    
+    datafile = f'data/SILVA_138.1_{species}.fasta'
+    filename = f'Results/{species}Results_E_{epsilon}.pickle'
 
-    data_list = getdata('data/SILVA_138.1_Fusobacteriota.fasta')
+
+    data_list = getdata(datafile)
     prcsd_data = preprocess(data_list)
     inds, cols = filter_stable_sites(data=prcsd_data, epsilon=epsilon)
 
     print(f'{len(inds)} Unstable Sites Found!')
     mi_init = mutinf_setup(indices=inds, cols=cols)
-    mi_final, inds_final, cols_final, mv = alg(MI_list_=mi_init, gamma=gamma, indices_=inds, cols_=cols)
+    rd, mv = alg(MI_list_=mi_init, indices_=inds, cols_=cols, gammas_=gammas)
+
+    with open(filename, 'wb') as handle:
+        pickle.dump(rd, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    plt.plot(mv)
+    plt.savefig(f'Plots/Dump/{species}_MV_E{epsilon}.png')

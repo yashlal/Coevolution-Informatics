@@ -19,5 +19,6 @@ for i in range(len(l)):
 
 print(f'Site of Size {len(inds)}')
 
-for ind in inds:
-    print(ecoli.index(ind))
+new_inds = sorted([ecoli.index(ind) for ind in inds])
+
+print(new_inds)
