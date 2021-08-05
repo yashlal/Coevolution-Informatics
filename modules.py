@@ -18,10 +18,8 @@ def shannon_entr(col):
 # 1/len(args[0]) is the prob of 1 divided by number of rows, added each time a rows is encountered
 # the try except steps the probability of a row if it exists else it adds it
 def joint_entr(*args):
-    prob_dict = {}
-    prob_dict = {row: prob_dict.get(row,0) + (1/len(args[0])) for row in zip(*args)}
-
-    probs_ar = np.array(list(prob_dict.values()))
+    all_rows = [row for row in zip(*args)]
+    probs_ar = np.array([v/len(args[0]) for v in Counter(all_rows).values()])
     entr = sum(-probs_ar*(np.log2(probs_ar, out=np.zeros_like(probs_ar), where=(probs_ar!=0))))
     return entr
 
