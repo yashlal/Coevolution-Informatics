@@ -91,6 +91,15 @@ def alg(MI_list_, indices_, cols_, gammas_):
 
         if max_values[-1] < gammas_[gamma_ind]:
             results_dict[gammas_[gamma_ind]] = indices.copy()
+            print('\n')
+            print('-------------------------------------------------------')
+            print('-------------------------------------------------------')
+            print('-------------------------------------------------------')
+            print(f'REACHED GAMMA {gammas_[gamma_ind]} AT TIME STEP {t}')
+            print('-------------------------------------------------------')
+            print('-------------------------------------------------------')
+            print('-------------------------------------------------------')
+            print('\n')
             gamma_ind += 1
 
         #join the sites
@@ -119,25 +128,23 @@ def alg(MI_list_, indices_, cols_, gammas_):
             if not f1.isdisjoint(f2):
                 MI_list.remove(j)
 
-        myargs = [(cols[-1], cols[k], indices[k], indices[-1]) for k in range(len(cols)-1)]
+        myargs = [(cols[-1], cols[k], indices[-1], indices[k]) for k in range(len(cols)-1)]
         with multiprocessing.Pool() as pool:
             results = pool.starmap(mutual_inf_MP, myargs)
         MI_list = sorted(results, key=lambda x:x[-1])
 
         print(f'Iteration took {round((time.time()-start), 3)} seconds')
-        print("\n")
 
         t += 1
 
     return results_dict, max_values
 
 if __name__=='__main__':
-    epsilon, gammas = 0.0232, [0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+    epsilon, gammas = 0.232, [0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
     species = 'Fusobacteriota'
-    
+
     datafile = f'data/SILVA_138.1_{species}.fasta'
     filename = f'Results/{species}Results_E_{epsilon}.pickle'
-
 
     data_list = getdata(datafile)
     prcsd_data = preprocess(data_list)

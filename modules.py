@@ -1,5 +1,6 @@
 import numpy as np
 from collections import Counter
+import time
 
 bases_dict = {'A': 0, 'G':1, 'C':2, 'T':3, 'B':4, '.':4, '-':4, 'N':4, 'Y':4, 'M':4, 'S':4, 'K':4, 'R':4, 'W':4, 'V':4, 'D':4, 'H':4}
 
@@ -18,11 +19,10 @@ def shannon_entr(col):
 # the try except steps the probability of a row if it exists else it adds it
 def joint_entr(*args):
     prob_dict = {}
-    entr = 0
-    for row in zip(*args):
-        s = ''.join(row)
-        prob_dict[s] = prob_dict.get(s,0) + (1/len(args[0]))
-    entr = sum([-el*(np.log2(el)) for el in prob_dict.values()])
+    prob_dict = {row: prob_dict.get(row,0) + (1/len(args[0])) for row in zip(*args)}
+
+    probs_ar = np.array(list(prob_dict.values()))
+    entr = sum(-probs_ar*(np.log2(probs_ar, out=np.zeros_like(probs_ar), where=(probs_ar!=0))))
     return entr
 
 # X and Y are lists where each element in the list is a columns eg if we had AGC and no others columns then X = [['A', 'G', 'C']]
