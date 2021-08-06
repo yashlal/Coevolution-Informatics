@@ -7,7 +7,7 @@ import algorithm
 import modules
 import time
 
-with open('Results/FusobacteriotaResults.pickle', 'rb') as handle:
+with open('Results\FusobacteriotaResults_E_0.116.pickle', 'rb') as handle:
     b = pickle.load(handle)
 
 # converts columns values to numbers to do PCA + clustering
@@ -33,7 +33,7 @@ def labels_to_hist_dict(labels):
 
 def algplots(new_cols):
 
-    for x in range(1,6):
+    for x in range(len(list(b.items()))):
         mytuple = list(b.items())[x]
         sites = [_ for _ in mytuple[1] if type(_)==list]
         gamma = round(mytuple[0], 2)

@@ -4,7 +4,6 @@ import time
 
 bases_dict = {'A': 0, 'G':1, 'C':2, 'T':3, 'B':4, '.':4, '-':4, 'N':4, 'Y':4, 'M':4, 'S':4, 'K':4, 'R':4, 'W':4, 'V':4, 'D':4, 'H':4}
 
-
 # entropy is shannon entropy with logbase 2
 def shannon_entr(col):
     l = [0,0,0,0,0]
@@ -16,7 +15,7 @@ def shannon_entr(col):
 
 # Calculate H(X,Y) (joint entropy) where *args is any n columns, the zip function forms a row iterator
 # 1/len(args[0]) is the prob of 1 divided by number of rows, added each time a rows is encountered
-# the try except steps the probability of a row if it exists else it adds it
+# The Counter function creates a dict of row:n_occurences of row
 def joint_entr(*args):
     all_rows = [row for row in zip(*args)]
     probs_ar = np.array([v/len(args[0]) for v in Counter(all_rows).values()])

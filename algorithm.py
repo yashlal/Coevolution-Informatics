@@ -7,6 +7,7 @@ from modules import *
 import matplotlib.pyplot as plt
 import multiprocessing
 from itertools import combinations
+import pickle
 
 problems = ['.', '-', 'N', 'Y', 'M', 'S', 'K', 'R', 'W', 'V', 'D', 'H']
 bases_dict = {'A': 0, 'G':1, 'C':2, 'T':3, 'B':4, '.':4, '-':4, 'N':4, 'Y':4, 'M':4, 'S':4, 'K':4, 'R':4, 'W':4, 'V':4, 'D':4, 'H':4}
@@ -32,7 +33,7 @@ def preprocess(data):
 # returns dictionary where key is index and value is the probability
 # only consider sites where H(X) > epsilon
 def filter_stable_sites(data, epsilon):
-    pbar = tqdm(range(len(data[0])))
+    pbar = tqdm(range(len(data)))
     pbar.set_description('Generating Filtered Data')
     indices = []
     new_data = []
@@ -64,7 +65,7 @@ def mutinf_setup(indices, cols):
     with multiprocessing.Pool() as pool:
         MI_calcs = pool.starmap(mutual_inf_MP, myargs)
 
-    return MI_calcs
+    return sorted(MI_calcs, lambda x:x[-1])
 
 def alg(MI_list_, indices_, cols_, gammas_):
     gammas_ = sorted(gammas_, reverse=True)
@@ -131,31 +132,32 @@ def alg(MI_list_, indices_, cols_, gammas_):
         myargs = [(cols[-1], cols[k], indices[-1], indices[k]) for k in range(len(cols)-1)]
         with multiprocessing.Pool() as pool:
             results = pool.starmap(mutual_inf_MP, myargs)
-        MI_list = sorted(results, key=lambda x:x[-1])
+        MI_list = sorted(MI_list+results, key=lambda x:x[-1])
 
         print(f'Iteration took {round((time.time()-start), 3)} seconds')
-
+        print(indices)
         t += 1
 
     return results_dict, max_values
 
 if __name__=='__main__':
-    epsilon, gammas = 0.232, [0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
-    species = 'Fusobacteriota'
+    epsilon, gammas = 0.116, [0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+    all_species = ['Fusobacteriota']
 
-    datafile = f'data/SILVA_138.1_{species}.fasta'
-    filename = f'Results/{species}Results_E_{epsilon}.pickle'
+    for species in all_species:
+        print(f'-------------------------------RUNNING SPECIES {species}!-------------------------------')
+        datafile = f'data/SILVA_138.1_{species}.fasta'
+        filename = f'Results/{species}Results_E_{epsilon}.pickle'
 
-    data_list = getdata(datafile)
-    prcsd_data = preprocess(data_list)
-    inds, cols = filter_stable_sites(data=prcsd_data, epsilon=epsilon)
+        data_list = getdata(datafile)
+        prcsd_data = preprocess(data_list)
+        inds, cols = filter_stable_sites(data=prcsd_data, epsilon=epsilon)
+        print(f'{len(inds)} Unstable Sites Found!')
+        mi_init = mutinf_setup(indices=inds, cols=cols)
+        rd, mv = alg(MI_list_=mi_init, indices_=inds, cols_=cols, gammas_=gammas)
 
-    print(f'{len(inds)} Unstable Sites Found!')
-    mi_init = mutinf_setup(indices=inds, cols=cols)
-    rd, mv = alg(MI_list_=mi_init, indices_=inds, cols_=cols, gammas_=gammas)
+        with open(filename, 'wb') as handle:
+            pickle.dump(rd, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    with open(filename, 'wb') as handle:
-        pickle.dump(rd, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-    plt.plot(mv)
-    plt.savefig(f'Plots/Dump/{species}_MV_E{epsilon}.png')
+        plt.plot(mv)
+        plt.savefig(f'Plots/Dump/{species}_MV_E{epsilon}.png')
