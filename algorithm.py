@@ -33,7 +33,7 @@ def preprocess(data):
 # returns dictionary where key is index and value is the probability
 # only consider sites where H(X) > epsilon
 def filter_stable_sites(data, epsilon):
-    pbar = tqdm(range(len(data)))
+    pbar = tqdm(range(len(data[0])))
     pbar.set_description('Generating Filtered Data')
     indices = []
     new_data = []
@@ -65,7 +65,7 @@ def mutinf_setup(indices, cols):
     with multiprocessing.Pool() as pool:
         MI_calcs = pool.starmap(mutual_inf_MP, myargs)
 
-    return sorted(MI_calcs, lambda x:x[-1])
+    return sorted(MI_calcs, key=lambda x:x[-1])
 
 def alg(MI_list_, indices_, cols_, gammas_):
     gammas_ = sorted(gammas_, reverse=True)
@@ -135,14 +135,13 @@ def alg(MI_list_, indices_, cols_, gammas_):
         MI_list = sorted(MI_list+results, key=lambda x:x[-1])
 
         print(f'Iteration took {round((time.time()-start), 3)} seconds')
-        print(indices)
         t += 1
 
     return results_dict, max_values
 
 if __name__=='__main__':
     epsilon, gammas = 0.116, [0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
-    all_species = ['Fusobacteriota']
+    all_species = ['Cyanobacteria']
 
     for species in all_species:
         print(f'-------------------------------RUNNING SPECIES {species}!-------------------------------')
