@@ -1,24 +1,53 @@
 from Bio import SeqIO
 import pickle
+import json
 
-path = 'data/SILVA_138.1_Fusobacteriota_plus_Ecoli.fasta'
-inds = [1012, 1011, 1020, 1019, 1008, 1007, 1013, 1010]
+mypath = 'data/SILVA_138.1_Fusobacteriota_plus_Ecoli.fasta'
 bases = ['A', 'G', 'C', 'T']
 
-data = SeqIO.parse(path,"fasta")
-data_list = []
-for sample in data:
-    data_list.append(str(sample.seq))
+def ecoli_setup(path):
+    data = SeqIO.parse(path,"fasta")
+    data_list = []
+    for sample in data:
+        data_list.append(str(sample.seq))
 
-ecoli = []
-l = list(data_list[-1])
+    ecoli = []
+    l = list(data_list[-1])
 
-for i in range(len(l)):
-    if l[i] in bases:
-        ecoli.append(i)
+    for i in range(len(l)):
+        if l[i] in bases:
+            ecoli.append(i)
+    return ecoli
 
-print(f'Site of Size {len(inds)}')
+def get_plot_inds(ecoli_l, sites):
+    output = []
 
-new_inds = sorted([ecoli.index(ind) for ind in inds])
+    for arg in sites:
+        print(f'Site of Size {len(arg)}')
 
-print(new_inds)
+        try:
+            output.append(sorted([ecoli_l.index(ind)+1 for ind in arg]))
+        except ValueError:
+            print('Site Error')
+            continue
+
+    return output
+
+with open('Results\FusobacteriotaResults_E_0.116.pickle', 'rb') as handle:
+    b = pickle.load(handle)
+
+all_sites = []
+
+for x in b.values():
+    for i in x:
+        if type(i)!=int:
+            if len(i)>2:
+                all_sites.append(i)
+
+ecoli_l = ecoli_setup(mypath)
+all_proper_sites = get_plot_inds(ecoli_l=ecoli_l, sites=all_sites)
+print(all_proper_sites)
+
+with open('Results/FB_VP.txt', 'w') as f:
+    for item in all_proper_sites:
+        f.write("%s\n" % item)

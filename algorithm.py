@@ -58,7 +58,7 @@ def gen_mut_inf_mat(indices, cols):
     return sorted(init_u, key=lambda x:x[-1])
 
 def mutinf_setup(indices, cols):
-    lg = len(indices)
+    lg = len(cols)
     custom_indices = combinations(list(range(lg)),2)
     myargs = [(cols[tup1], cols[tup2], indices[tup1], indices[tup2]) for tup1, tup2 in custom_indices]
 
@@ -83,9 +83,8 @@ def alg(MI_list_, indices_, cols_, gammas_):
     print('Beginning Algorithm\n')
 
     while (len(MI_list)>0) and (gamma_ind<len(gammas_)):
-
-        max_values.append(MI_list[-1][-1])
         start = time.time()
+        max_values.append(MI_list[-1][-1])
 
         print(f'On time t={t}')
         print(f'Max MI Term is {MI_list[-1][-1]}')
@@ -121,19 +120,16 @@ def alg(MI_list_, indices_, cols_, gammas_):
             cols.remove(col)
         indices.append(ind_bound_site)
         cols.append(cols_bound_site)
-
         #delete MI calcs with the old columns
+        f1 = set(flatten(MI_list[-1][:-1]))
         for j in MI_list.copy():
-            f1 = set(flatten(MI_list[-1][:-1]))
             f2 = list(flatten(j[:-1]))
             if not f1.isdisjoint(f2):
                 MI_list.remove(j)
-
         myargs = [(cols[-1], cols[k], indices[-1], indices[k]) for k in range(len(cols)-1)]
         with multiprocessing.Pool() as pool:
             results = pool.starmap(mutual_inf_MP, myargs)
         MI_list = sorted(MI_list+results, key=lambda x:x[-1])
-
         print(f'Iteration took {round((time.time()-start), 3)} seconds')
         t += 1
 
@@ -141,7 +137,7 @@ def alg(MI_list_, indices_, cols_, gammas_):
 
 if __name__=='__main__':
     epsilon, gammas = 0.116, [0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
-    all_species = ['Cyanobacteria']
+    all_species = ['Fusobacteriota']
 
     for species in all_species:
         print(f'-------------------------------RUNNING SPECIES {species}!-------------------------------')
