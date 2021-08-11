@@ -33,7 +33,8 @@ def preprocess(data):
 # returns dictionary where key is index and value is the probability
 # only consider sites where H(X) > epsilon
 def filter_stable_sites(data, epsilon):
-    pbar = tqdm(range(len(data[0])))
+    lg = int(len(data[0]))
+    pbar = tqdm(range(lg))
     pbar.set_description('Generating Filtered Data')
     indices = []
     new_data = []
@@ -66,6 +67,11 @@ def mutinf_setup(indices, cols):
         MI_calcs = pool.starmap(mutual_inf_MP, myargs)
 
     return sorted(MI_calcs, key=lambda x:x[-1])
+
+def list_comp(s,l):
+    f = list(flatten(l))[:-1]
+    if s.isdisjoint(f):
+        return l
 
 def alg(MI_list_, indices_, cols_, gammas_):
     gammas_ = sorted(gammas_, reverse=True)
@@ -122,13 +128,14 @@ def alg(MI_list_, indices_, cols_, gammas_):
         cols.append(cols_bound_site)
         #delete MI calcs with the old columns
         f1 = set(flatten(MI_list[-1][:-1]))
-        for j in MI_list.copy():
-            f2 = list(flatten(j[:-1]))
-            if not f1.isdisjoint(f2):
-                MI_list.remove(j)
-        myargs = [(cols[-1], cols[k], indices[-1], indices[k]) for k in range(len(cols)-1)]
+
+        myargs1 = [(f1,j) for j in MI_list.copy()]
+        myargs2 = [(cols[-1], cols[k], indices[-1], indices[k]) for k in range(len(cols)-1)]
+
         with multiprocessing.Pool() as pool:
-            results = pool.starmap(mutual_inf_MP, myargs)
+            MI_list = list(filter(None, pool.starmap(list_comp, myargs1)))
+            results = pool.starmap(mutual_inf_MP, myargs2)
+
         MI_list = sorted(MI_list+results, key=lambda x:x[-1])
         print(f'Iteration took {round((time.time()-start), 3)} seconds')
         t += 1
