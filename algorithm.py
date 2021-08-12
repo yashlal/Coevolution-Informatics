@@ -149,7 +149,7 @@ if __name__=='__main__':
     for species in all_species:
         print(f'-------------------------------RUNNING SPECIES {species}!-------------------------------')
         datafile = f'data/SILVA_138.1_{species}.fasta'
-        filename = f'Results/{species}Results_E_{epsilon}.pickle'
+        filename = f'{species}Results_E_{epsilon}.pickle'
 
         data_list = getdata(datafile)
         prcsd_data = preprocess(data_list)
@@ -162,4 +162,4 @@ if __name__=='__main__':
             pickle.dump(rd, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
         plt.plot(mv)
-        plt.savefig(f'Plots/Dump/{species}_MV_E{epsilon}.png')
+        plt.savefig(f'{species}_MV_E{epsilon}.png')
