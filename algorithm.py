@@ -133,8 +133,8 @@ def alg(MI_list_, indices_, cols_, gammas_):
         myargs2 = [(cols[-1], cols[k], indices[-1], indices[k]) for k in range(len(cols)-1)]
 
         with multiprocessing.Pool() as pool:
-            MI_list = list(filter(None, pool.starmap(list_comp, myargs1)))
-            results = pool.starmap(mutual_inf_MP, myargs2)
+            MI_list = list(filter(None, pool.starmap_async(list_comp, myargs1)))
+            results = pool.starmap_async(mutual_inf_MP, myargs2)
 
         MI_list = sorted(MI_list+results, key=lambda x:x[-1])
         print(f'Iteration took {round((time.time()-start), 3)} seconds')
