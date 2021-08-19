@@ -10,6 +10,7 @@ from itertools import combinations
 import pickle
 
 problems = ['.', '-', 'N', 'Y', 'M', 'S', 'K', 'R', 'W', 'V', 'D', 'H']
+bases = ['A','G','C','T']
 bases_dict = {'A': 0, 'G':1, 'C':2, 'T':3, 'B':4, '.':4, '-':4, 'N':4, 'Y':4, 'M':4, 'S':4, 'K':4, 'R':4, 'W':4, 'V':4, 'D':4, 'H':4}
 
 def getdata(path):
@@ -24,10 +25,13 @@ def preprocess(data):
     pbar_prcs = tqdm(range(len(data)))
     pbar_prcs.set_description('Preprocessing Data Blanks')
     for ind in pbar_prcs:
-        new_s = data[ind]
-        for char in problems:
-            new_s = new_s.replace(char, 'B')
-        new_data.append(new_s)
+        l = []
+        for char in data[ind]:
+            if char in bases:
+                l.append(char)
+            else:
+                l.append('B')
+        new_data.append(''.join(l))
     return new_data
 
 # returns dictionary where key is index and value is the probability
