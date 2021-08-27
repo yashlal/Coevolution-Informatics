@@ -1,5 +1,7 @@
 import pickle
 from Bio import SeqIO
+import modules
+import MFE_calc
 
 blanks = ['-','.']
 species = ['Cyanobacteria', "Bacteroidota"]
@@ -9,6 +11,7 @@ for spec in species:
         b.append(pickle.load(handle)[0.8])
 
 sites = []
+nonsites = []
 for i in b[0]:
     if i in b[1]:
         try:
@@ -16,6 +19,11 @@ for i in b[0]:
                 sites.append(i)
         except:
             pass
+    else:
+        if type(i)!=list:
+            nonsites.append(i)
+
+sites=list(modules.flatten(sites))
 
 with open('data\SILVA_138.1_Cyanobacteria.fasta') as handle:
     data = list(SeqIO.parse(handle, "fasta"))
@@ -23,24 +31,23 @@ with open('data\SILVA_138.1_Cyanobacteria.fasta') as handle:
 
 site_nums = []
 pure_seq_l = []
-for char in sequence:
-    if char not in blanks:
-        pure_seq_l.append(char)
-pure_seq = ''.join(pure_seq_l)
-print(pure_seq)
-print(len(pure_seq))
+
 for i in range(len(sequence)):
     if sequence[i] not in blanks:
         site_nums.append(i)
+        pure_seq_l.append(sequence[i])
 
-new_sites = []
+sites_2 = []
+nonsites_2 = []
 for site in sites:
-    new_sites.append([])
-    for location in site:
-        new_sites[-1].append(site_nums.index(location))
+    sites_2.append(site_nums.index(site))
+for nonsite in nonsites:
+    try:
+        nonsites_2.append(site_nums.index(nonsite))
+    except:
+        pass
 
-print(new_sites)
+MFE_pos = MFE_calc.main_MFE_func(pure_seq_l, sites_2)
+MFE_neg = MFE_calc.main_MFE_func(pure_seq_l, nonsites_2)
 
-with open('VP/CBBD.txt', 'w') as f:
-    for item in new_sites:
-        f.write("%s\n" % item)
+print(MFE_pos, MFE_neg)
