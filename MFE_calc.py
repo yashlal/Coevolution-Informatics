@@ -2,6 +2,7 @@ from subprocess import PIPE, Popen
 import random as rd
 import tqdm
 import pickle
+import numpy as np
 
 bases = ['A','G','C','T']
 
@@ -51,4 +52,29 @@ def main_MFE_func(s, pxns):
         MFE_sum += value_for_dict-ref_val
 
     avg_mfe_pert = MFE_sum/len(pxns)
-    return avg_mfe_pert
+    return avg_mfe_pert, ref_val
+
+def MFE_func_all(s, pxns):
+    ref_input = ''.join(s)
+    p = Popen('C:\Program Files (x86)\ViennaRNA Package\RNAfold.exe', stdin=PIPE, stdout=PIPE)
+    reference = list(p.communicate(ref_input.encode())[0].decode())
+    ref_val = process_val(reference)
+
+    MFE_list = []
+
+    pbar = tqdm.tqdm(range(len(pxns)))
+    for dummy_iter in pbar:
+
+        x = pxns[dummy_iter]
+        if x=='BLANK':
+            MFE_list.append(np.nan)
+        else:
+            inp = ''.join(mutate(x, s))
+
+            p = Popen('C:\Program Files (x86)\ViennaRNA Package\RNAfold.exe', stdin=PIPE, stdout=PIPE)
+            ans = list(p.communicate(inp.encode())[0].decode())
+
+            value_for_dict = process_val(ans)
+            MFE_list.append(value_for_dict-ref_val)
+
+    return MFE_list, ref_val
