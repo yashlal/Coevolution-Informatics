@@ -1,13 +1,17 @@
 from subprocess import PIPE, Popen
 import random as rd
 import tqdm
+import p_tqdm
 import pickle
 import numpy as np
 import multiprocessing
 import modules
 from Bio import SeqIO
+from tqdm.contrib.concurrent import process_map
+import pandas as pd
 
-bases = ["A",'G','C','T']
+
+bases = ['A','G','C','T']
 def process_val(raw_input):
     val = []
     s=0
@@ -40,9 +44,7 @@ def MFE_func_all(s, pxns):
     ref_val = process_val(reference)
 
     MFE_list = []
-    pbar = tqdm.trange(len(pxns))
-    for pbar_iter in pbar:
-        x = pxns[pbar_iter]
+    for x in pxns:
         if x=='BLANK':
             MFE_list.append(np.nan)
         else:
@@ -99,8 +101,8 @@ for i in b[0]:
 
 sites=list(modules.flatten(sites))
 
-sites=sites[0:10]
-nonsites=nonsites[0:10]
+sites=sites
+nonsites=nonsites
 
 with open('data\SILVA_138.1_Cyanobacteria.fasta') as handle:
     data = list(SeqIO.parse(handle, "fasta"))
@@ -112,18 +114,17 @@ if __name__=='__main__':
     results_l = []
     index_col = []
 
+    pool_input = []
 
-    for j in range(50):
+    for j in range(25):
         if j not in bad_seqs:
             index_col.append(j)
             print(f'Sequence {j}/50')
-            sequence = str(data[j].seq)
-            p_vals, n_vals, ref = run_sequence(sequence)
-            print(p_vals, n_vals, ref)
-            results_l.append([ref]+p_vals+n_vals)
+            pool_input.append(str(data[j].seq))
 
+    pool_output = process_map(run_sequence, pool_input)
+    formatted_output = [[z]+x+y for x,y,z in pool_output]
     columns_labels = ['REFERENCE']+['S'+str(_) for _ in sites]+['NS'+str(n_) for n_ in nonsites]
-    results_df = pd.DataFrame(results_l, index=index_col, columns=columns_labels)
+    results_df = pd.DataFrame(formatted_output, index=index_col, columns=columns_labels)
 
-    results_df.to_excel('CB_MFE50.xlsx')
-    print(results_df)
+    results_df.to_excel('CB_MFE25.xlsx')
