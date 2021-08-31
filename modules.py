@@ -51,8 +51,8 @@ def mutual_inf_MP(X, Y, ind1, ind2):
     H_x = joint_entr(*X)
     H_y = joint_entr(*Y)
     H_xy = joint_entr(*X, *Y)
-    minimum = min(H_x, H_y)
-    calc = ((H_x+H_y-H_xy)/minimum)
+    norm_factor = (H_x+H_y)/2
+    calc = ((H_x+H_y-H_xy)/norm_factor)
 
     return [ind1, ind2, calc]
 

@@ -84,7 +84,7 @@ def run_sequence(seq):
     return MFE_pos, MFE_neg, rv
 
 blanks = ['-','.']
-species = ['Cyanobacteria']
+species = ['Bacteroidota']
 b = []
 for spec in species:
     with open(f'Results\{spec}Results_E_0.116.pickle', 'rb') as handle:
@@ -104,10 +104,10 @@ sites=list(modules.flatten(sites))
 sites=sites
 nonsites=nonsites
 
-with open('data\SILVA_138.1_Cyanobacteria.fasta') as handle:
-    data = list(SeqIO.parse(handle, "fasta"))
+with open('data\SILVA_138.1_Bacteroidota.fasta') as handle:
+    data = list(SeqIO.parse(handle, "fasta"))[0:50]
 
-bad_seqs = [51, 74, 75, 76, 93, 113, 118, 120]
+bad_seqs = [0, 1, 5, 17, 18, 19, 24, 26, 29, 31, 36, 39, 40, 48, 56, 61, 72, 84, 92, 93, 98]
 
 if __name__=='__main__':
 
@@ -116,7 +116,7 @@ if __name__=='__main__':
 
     pool_input = []
 
-    for j in range(25):
+    for j in range(35):
         if j not in bad_seqs:
             index_col.append(j)
             print(f'Sequence {j}/50')
@@ -127,4 +127,4 @@ if __name__=='__main__':
     columns_labels = ['REFERENCE']+['S'+str(_) for _ in sites]+['NS'+str(n_) for n_ in nonsites]
     results_df = pd.DataFrame(formatted_output, index=index_col, columns=columns_labels)
 
-    results_df.to_excel('CB_MFE25.xlsx')
+    results_df.to_excel('BD_MFE25.xlsx')
