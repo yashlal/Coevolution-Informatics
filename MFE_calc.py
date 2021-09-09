@@ -9,6 +9,8 @@ import modules
 from Bio import SeqIO
 from tqdm.contrib.concurrent import process_map
 import pandas as pd
+from datetime import datetime
+
 
 bases = ['A','G','C','T']
 safe = ['A','G','C','T', '-', '.']
@@ -80,6 +82,10 @@ def run_sequence(seq, sites):
     return MFE_vals, rv
 
 if __name__=='__main__':
+    now = datetime.now()
+    date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+    print("STARTING:", date_time)
+
     b = []
     for spec in species:
         with open(f'Results\{spec}Results_E_0.116.pickle', 'rb') as handle:
@@ -109,7 +115,6 @@ if __name__=='__main__':
         for j in range(50):
             if j not in bad_seqs:
                 index_col.append(j)
-                print(f'Sequence {j}/50')
                 pool_input.append((str(data[j].seq), sites))
 
         with multiprocessing.Pool() as pool:
@@ -119,3 +124,9 @@ if __name__=='__main__':
         results_df = pd.DataFrame(formatted_output, index=index_col, columns=columns_labels)
 
         results_df.to_excel(f'MFE/{spec}_MFE50.xlsx')
+        print('____________________________________________________________________________')
+        print(f'{spec} IS FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        now = datetime.now()
+        date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+        print("End Time: ",date_time)
+        print('____________________________________________________________________________')
