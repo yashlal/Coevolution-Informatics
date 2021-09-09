@@ -11,7 +11,6 @@ from tqdm.contrib.concurrent import process_map
 import pandas as pd
 from datetime import datetime
 
-
 bases = ['A','G','C','T']
 safe = ['A','G','C','T', '-', '.']
 blanks = ['-','.']
