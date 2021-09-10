@@ -95,7 +95,7 @@ if __name__=='__main__':
             data = list(SeqIO.parse(handle, "fasta"))
 
         bad_seqs = []
-        for sequence_ind in range(100):
+        for sequence_ind in range(1000):
             s=0
             for char in str(data[sequence_ind].seq):
                 if char not in safe:
