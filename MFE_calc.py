@@ -14,7 +14,8 @@ from datetime import datetime
 bases = ['A','G','C','T']
 safe = ['A','G','C','T', '-', '.']
 blanks = ['-','.']
-species = ['Cyanobacteria', 'Fusobacteriota']
+species = ['Bacteroidota']
+path = 'C:\Program Files (x86)\ViennaRNA Package\RNAfold.exe'
 
 def process_val(raw_input):
     val = []
@@ -43,7 +44,7 @@ def mutate(pxn, full_seq):
 
 def MFE_func_all(s, pxns):
     ref_input = ''.join(s)
-    p = Popen('C:\Program Files (x86)\ViennaRNA Package\RNAfold.exe', stdin=PIPE, stdout=PIPE)
+    p = Popen(path, stdin=PIPE, stdout=PIPE)
     reference = list(p.communicate(ref_input.encode())[0].decode())
     ref_val = process_val(reference)
 
@@ -53,7 +54,7 @@ def MFE_func_all(s, pxns):
             MFE_list.append(np.nan)
         else:
             inp = ''.join(mutate(x,s))
-            p = Popen('C:\Program Files (x86)\ViennaRNA Package\RNAfold.exe', stdin=PIPE, stdout=PIPE)
+            p = Popen(path, stdin=PIPE, stdout=PIPE)
             ans = list(p.communicate(inp.encode())[0].decode())
             value_for_dict = process_val(ans)
             MFE_list.append(value_for_dict-ref_val)

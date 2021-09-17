@@ -1,3 +1,4 @@
+from subprocess import PIPE, Popen
 import random as rd
 import tqdm
 import p_tqdm
@@ -6,14 +7,15 @@ import numpy as np
 import multiprocessing
 import modules
 from Bio import SeqIO
+from tqdm.contrib.concurrent import process_map
 import pandas as pd
 from datetime import datetime
-import RNA
 
 bases = ['A','G','C','T']
 safe = ['A','G','C','T', '-', '.']
 blanks = ['-','.']
-species = ['Fusobacteriota']
+species = ['Bacteroidota']
+path = 'C:\Program Files (x86)\ViennaRNA Package\RNAfold.exe'
 
 def process_val(raw_input):
     val = []
@@ -42,8 +44,9 @@ def mutate(pxn, full_seq):
 
 def MFE_func_all(s, pxns):
     ref_input = ''.join(s)
-
-    (ss, ref_val) = RNA.fold(ref_input)
+    p = Popen(path, stdin=PIPE, stdout=PIPE)
+    reference = list(p.communicate(ref_input.encode())[0].decode())
+    ref_val = process_val(reference)
 
     MFE_list = []
     for x in pxns:
@@ -51,8 +54,9 @@ def MFE_func_all(s, pxns):
             MFE_list.append(np.nan)
         else:
             inp = ''.join(mutate(x,s))
-
-            (ss, value_for_dict) = RNA.fold(ref_input)
+            p = Popen(path, stdin=PIPE, stdout=PIPE)
+            ans = list(p.communicate(inp.encode())[0].decode())
+            value_for_dict = process_val(ans)
             MFE_list.append(value_for_dict-ref_val)
 
     return MFE_list, ref_val
@@ -95,7 +99,7 @@ if __name__=='__main__':
             data = list(SeqIO.parse(handle, "fasta"))
 
         bad_seqs = []
-        for sequence_ind in range(1000):
+        for sequence_ind in range(100):
             s=0
             for char in str(data[sequence_ind].seq):
                 if char not in safe:
