@@ -1,7 +1,6 @@
 from subprocess import PIPE, Popen
 import random as rd
 import tqdm
-import p_tqdm
 import pickle
 import numpy as np
 import multiprocessing
@@ -50,12 +49,12 @@ def MFE_func_all(s, pxns):
     MFE_list = []
     for x in pxns:
         if x=='BLANK':
-		MFE_list.append(np.nan)
+			MFE_list.append(np.nan)
         else:
-		inp = ''.join(mutate(x,s))
-		(nonsense2, MFE_val2) = RNA.fold(ref_input)
-		value_for_dict = MFE_val
-		MFE_list.append(value_for_dict-ref_val)
+			inp = ''.join(mutate(x,s))
+			(nonsense2, MFE_val2) = RNA.fold(ref_input)
+			value_for_dict = MFE_val
+			MFE_list.append(value_for_dict-ref_val)
 
     return MFE_list, ref_val
 
@@ -86,14 +85,14 @@ if __name__=='__main__':
 
     b = []
     for spec in species:
-        with open(f'Results\{spec}Results_E_0.116.pickle', 'rb') as handle:
+        with open(f'Results/{spec}Results_E_0.116.pickle', 'rb') as handle:
             b.append(pickle.load(handle)[0.95])
 
         sites = list(modules.flatten(b))
 
         sites=sites
 
-        with open(f'data\SILVA_138.1_{spec}.fasta') as handle:
+        with open(f'data/SILVA_138.1_{spec}.fasta') as handle:
             data = list(SeqIO.parse(handle, "fasta"))
 
         bad_seqs = []
@@ -126,5 +125,5 @@ if __name__=='__main__':
         print(f'{spec} IS FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         now = datetime.now()
         date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-        print("End Time: ",date_time)
+        print("End Time: ", date_time)
         print('____________________________________________________________________________')
