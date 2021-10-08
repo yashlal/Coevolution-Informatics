@@ -54,7 +54,7 @@ def MFE_func_all(s, pxns):
             inp = ''.join(mutate(x,s))
             (nonsense2, MFE_val2) = RNA.fold(ref_input)
             value_for_dict = MFE_val2
-            MFE_list.append(value_for_dict-ref_val)
+            MFE_list.append(abs(value_for_dict-ref_val))
 ​
     return MFE_list, ref_val
 ​
