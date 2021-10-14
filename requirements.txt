@@ -1,8 +1,7 @@
-BioPython
 numpy
 tqdm
-time
-sklearn
-csv
+biopython
 matplotlib
-pickle
+openpyxl
+pandas
+datetime
