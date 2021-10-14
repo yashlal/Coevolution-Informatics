@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import scikitplot as skplt
 import pickle
 
-species = 'Fusobacteriota'
+species = 'Bacteroidota'
 with open(f'Results/{species}Results_E_0.116.pickle', 'rb') as handle1:
     b1 = pickle.load(handle1)
 

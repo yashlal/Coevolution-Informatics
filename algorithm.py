@@ -1,9 +1,8 @@
 from tqdm import tqdm
 from Bio import SeqIO
+from modules import *
 import time
 import numpy as np
-from tqdm import tqdm
-from modules import *
 import matplotlib.pyplot as plt
 import multiprocessing
 from itertools import combinations
