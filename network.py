@@ -18,7 +18,6 @@ def load_data():
     data_list = getdata(datafile)
     prcsd_data = preprocess(data_list)
 
-    print(len(prcsd_data), len(prcsd_data[0]))
     return prcsd_data
 
 def get_sites():
@@ -29,6 +28,21 @@ def get_sites():
     sites = list(filter(lambda x: type(x)==list, b1[gamma]))
     return sites
 
-data = load_data()
-sites = get_sites()
-print(sites)
+def ordering(data, sites):
+    t_len = len(sites)
+    results = []
+    for cluster in sites:
+results.append([])
+	for i in range(len(cluster)):
+	new_cluster = cluster.copy()
+	    new_cluster.remove(cluster[i])
+	    full_data = [data[j] for j in cluster]
+	    mod_data = [data[k] for k in new_cluster]
+	    print(full_data, mod_data)
+    return results
+#data = load_data()
+#sites = get_sites()
+data = ['AGTCGTAGGT', 'TTTAGACGTG', 'TGTACAAGGA', 'AAGTGTCCCG', 'AAGTCGCATG'] 
+sites = [[1,2],[2,4],[0,2,4]]
+RES = ordering(data, sites)
+print(RES)
