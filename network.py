@@ -72,7 +72,6 @@ def entr_ordering(data, sites):
 def MP_MFE_func(data, cluster):
 	results = []
 	for step in range(len(cluster)):
-		print(results)
 		calc_list = []
 		for el in cluster:
 			seqs = []
@@ -97,10 +96,10 @@ def MP_MFE_func(data, cluster):
 
 			calc_list.append((el,s/20))
 
-			calc_list.sort(key=lambda x: x[1])
+		calc_list.sort(key=lambda x: x[1])
 
 		cluster.remove(calc_list[-1][0])
-		results[-1].append(calc_list[-1][0])
+		results.append(calc_list[-1][0])
 
 	results.reverse()
 
@@ -119,9 +118,9 @@ if __name__=='__main__':
 
 	data = load_data(species=species_list[0], epsilon=epsilon)
 	sites = get_sites(species=species_list[0], gamma=gammas[0])
-	print(mfe_ordering(data,sites))
+
 	
-	pool_input = [data, sites[i] for i in range(len(sites))]
+	pool_input = [(data, sites[i]) for i in range(len(sites))]
 	with multiprocessing.Pool() as pool:
 		all_results = pool.starmap(MP_MFE_func, pool_input)
 	
