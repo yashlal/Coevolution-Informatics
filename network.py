@@ -88,7 +88,7 @@ def mfe_ordering(data, sites):
 
 				s=0
 				for seq in seqs:
-                    seq = list(filter(list(seq), lambda z: z!= 'B'))
+					seq = list(filter(list(seq), lambda z: z!= 'B'))
 					ref_val = RNA.fold(seq)
 					exp_val = RNA.fold(mutate(el, seq))
 					s += abs(ref_val-exp_val)
