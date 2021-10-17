@@ -13,10 +13,8 @@ import RNA
 import mendotaMFE
 
 species_list = ['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota']
-species = species_list[0]
 epsilon = 0.116
 gammas = [0.95, 0.90, 0.85]
-gamma = gammas[0]
 
 def load_data(species, epsilon):
     datafile = f'data/SILVA_138.1_{species}.fasta'
@@ -69,32 +67,29 @@ def entr_ordering(data, sites):
 
 	return results
 
-def MP_MFE_func(data, cluster):
+def MP_MFE_func(seqs, cluster):
 	results = []
+
 	for step in range(len(cluster)):
 		calc_list = []
-		for el in cluster:
-			seqs = []
-			c=0
-			i=0
-			while c<20:
-				seq = data[i]
-				if not any([seq[el]=='B']):
-					c += 1
-					i += 1
-					seqs.append(seq)
-					continue
-				i += 1
-
+		for postn in cluster:
 			s=0
 			for seq in seqs:
-				new_seq2 = list(filter(lambda z: z!= 'B', list(mendotaMFE.mutate(el, list(seq)))))
-				new_seq1 = list(filter(lambda z: z!='B', list(seq)))
+
+				new_seq1 = list(seq).copy()
+				for el in results:
+					new_seq1 = mendotaMFE.mutate(el, new_seq2)
+
+				new_seq2 = new_seq1.copy()
+				new_seq2 = mendotaMFE.mutate(postn, new_seq2)
+				new_seq2 = list(filter(lambda z: z!='B', new_seq2))
+
 				ref_val = RNA.fold(''.join(new_seq1))[1]
 				exp_val = RNA.fold(''.join(new_seq2))[1]
+
 				s += abs(ref_val-exp_val)
 
-			calc_list.append((el,s/20))
+			calc_list.append((postn, s/len(seqs)))
 
 		calc_list.sort(key=lambda x: x[1])
 
@@ -116,13 +111,22 @@ if __name__=='__main__':
 	# 		with open(f'Results/InfRankings/{species}_E{epsilon}_G{gamma}_Ranking.pickle', 'wb') as handle:
 	# 			pickle.dump(RES, handle)
 
-	data = load_data(species=species_list[0], epsilon=epsilon)
-	sites = get_sites(species=species_list[0], gamma=gammas[0])
+	for species in species_list:
+		data = load_data(species=species, epsilon=epsilon)
+		for gamma in gammas:
+			sites = get_sites(species=species, gamma=gamma)
+			seqs = []
+			for cluster in sites:
+				seqs.append([])
+				for seq in data:
+					if all([seq[el]!='B' for el in cluster]):
+						seqs[-1].append(seq)
 
-	
-	pool_input = [(data, sites[i]) for i in range(len(sites))]
-	with multiprocessing.Pool() as pool:
-		all_results = pool.starmap(MP_MFE_func, pool_input)
-	
-	with open(f'Results\InfRankings\{species}_E{epsilon}_G{gamma}_Ranking.pickle', 'wb') as handle:
-		pickle.dump(all_results, handle)
+			seqs = [x[0:20] for x in seqs]
+
+			pool_input = [(seqs[i], sites[i]) for i in range(len(sites))]
+			with multiprocessing.Pool() as pool:
+				all_results = pool.starmap(MP_MFE_func, pool_input)
+
+			with open(f'{species}_E{epsilon}_G{gamma}_Ranking.pickle', 'wb') as handle:
+				pickle.dump(all_results, handle)
