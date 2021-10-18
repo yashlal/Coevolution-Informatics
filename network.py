@@ -78,7 +78,7 @@ def MP_MFE_func(seqs, cluster):
 
 				new_seq1 = list(seq).copy()
 				for el in results:
-					new_seq1 = mendotaMFE.mutate(el, new_seq2)
+					new_seq1 = mendotaMFE.mutate(el, new_seq1)
 
 				new_seq2 = new_seq1.copy()
 				new_seq1 = list(filter(lambda z: z!='B', new_seq1))
