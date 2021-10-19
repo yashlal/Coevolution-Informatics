@@ -147,8 +147,8 @@ def alg(MI_list_, indices_, cols_, gammas_):
     return results_dict, max_values
 
 if __name__=='__main__':
-    epsilon, gammas = 0.116, [0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
-    all_species = ['Cyanobacteria']
+    epsilon, gammas = 0.232, [0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+    all_species = ['Cyanobacteria', 'Fusobacteriota', 'Bacteroidota']
 
     for species in all_species:
         print(f'-------------------------------RUNNING SPECIES {species}!-------------------------------')
