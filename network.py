@@ -95,8 +95,8 @@ def MP_MFE_func(seqs, cluster):
 
 		calc_list.sort(key=lambda x: x[1])
 
-		cluster.remove(calc_list[-1][0])
-		results.append(calc_list[-1][0])
+		cluster.remove(calc_list[0][0])
+		results.append(calc_list[0][0])
 
 	results.reverse()
 
