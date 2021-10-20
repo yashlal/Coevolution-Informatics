@@ -19,7 +19,9 @@ for species in species_list:
     for gamma in gammas:
         with open(f'Results/MFERankings/{species}_E{epsilon}_G{gamma}_Ranking.pickle', 'rb') as handle1:
             b1 = pickle.load(handle1)
-        with open(f'Results/InfRankings/{species}_E{epsilon}_G{gamma}_Ranking.pickle', 'rb') as handle2:
+            for i in b1:
+                i.reverse()
+        with open(f'Results/InfRankings/R2/{species}_E{epsilon}_G{gamma}_Ranking.pickle', 'rb') as handle2:
             b2 = pickle.load(handle2)
 
         tup = hamm_dist(b1,b2)
