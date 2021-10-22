@@ -9,7 +9,7 @@ from Bio import SeqIO
 from tqdm.contrib.concurrent import process_map
 import pandas as pd
 from datetime import datetime
-import RNA
+# import RNA
 
 bases = ['A','G','C','T']
 safe = ['A','G','C','T', '-', '.']

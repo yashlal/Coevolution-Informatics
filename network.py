@@ -9,7 +9,7 @@ import multiprocessing
 from itertools import combinations
 import pickle
 import random
-import RNA
+# import RNA
 import mendotaMFE
 
 species_list = ['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota']
@@ -56,7 +56,8 @@ def entr_ordering(data, sites):
 
 			H_ind = shannon_entr([d3[i] for d3 in data])
 
-			statistic = (H_ind-(H_all-H_y))/(H_ind)
+			denom = (H_ind+H_y)/2
+			statistic = (H_ind-(H_all-H_y))/(denom)
 			unsorted_l.append(statistic)
 
 		sorted_l = unsorted_l.copy()
@@ -110,7 +111,7 @@ if __name__=='__main__':
 			# print(sites)
 			# print(len(data), len(data[0]))
 			RES = entr_ordering(data, sites)
-			with open(f'Results/InfRankings/R1/{species}_E{epsilon}_G{gamma}_Ranking.pickle', 'wb') as handle:
+			with open(f'Results/InfRankings/R2/{species}_E{epsilon}_G{gamma}_Ranking.pickle', 'wb') as handle:
 				pickle.dump(RES, handle)
 
 	# for species in species_list:
