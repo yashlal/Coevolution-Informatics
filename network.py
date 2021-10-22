@@ -103,32 +103,32 @@ def MP_MFE_func(seqs, cluster):
 	return results
 
 if __name__=='__main__':
-	# for species in species_list:
-	# 	data = load_data(species=species, epsilon=epsilon)
-	# 	for gamma in gammas:
-	# 		sites = get_sites(species=species, gamma=gamma)
-	# 		print(sites)
-	# 		print(len(data), len(data[0]))
-	# 		RES = entr_ordering(data, sites)
-	# 		with open(f'Results/InfRankings/{species}_E{epsilon}_G{gamma}_Ranking.pickle', 'wb') as handle:
-	# 			pickle.dump(RES, handle)
-
 	for species in species_list:
 		data = load_data(species=species, epsilon=epsilon)
 		for gamma in gammas:
 			sites = get_sites(species=species, gamma=gamma)
-			seqs = []
-			for cluster in sites:
-				seqs.append([])
-				for seq in data:
-					if all([seq[el]!='B' for el in cluster]):
-						seqs[-1].append(seq)
+			# print(sites)
+			# print(len(data), len(data[0]))
+			RES = entr_ordering(data, sites)
+			with open(f'Results/InfRankings/R1/{species}_E{epsilon}_G{gamma}_Ranking.pickle', 'wb') as handle:
+				pickle.dump(RES, handle)
 
-			seqs = [x[0:20] for x in seqs]
-
-			pool_input = [(seqs[i], sites[i]) for i in range(len(sites))]
-			with multiprocessing.Pool() as pool:
-				all_results = pool.starmap(MP_MFE_func, pool_input)
-
-			with open(f'{species}_E{epsilon}_G{gamma}_Ranking.pickle', 'wb') as handle:
-				pickle.dump(all_results, handle)
+	# for species in species_list:
+	# 	data = load_data(species=species, epsilon=epsilon)
+	# 	for gamma in gammas:
+	# 		sites = get_sites(species=species, gamma=gamma)
+	# 		seqs = []
+	# 		for cluster in sites:
+	# 			seqs.append([])
+	# 			for seq in data:
+	# 				if all([seq[el]!='B' for el in cluster]):
+	# 					seqs[-1].append(seq)
+	#
+	# 		seqs = [x[0:20] for x in seqs]
+	#
+	# 		pool_input = [(seqs[i], sites[i]) for i in range(len(sites))]
+	# 		with multiprocessing.Pool() as pool:
+	# 			all_results = pool.starmap(MP_MFE_func, pool_input)
+	#
+	# 		with open(f'{species}_E{epsilon}_G{gamma}_Ranking.pickle', 'wb') as handle:
+	# 			pickle.dump(all_results, handle)
