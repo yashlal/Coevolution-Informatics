@@ -12,7 +12,7 @@ import random
 # import RNA
 import mendotaMFE
 
-species_list = ['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota']
+species_list = ['Cyanobacteria']
 epsilon = 0.116
 gammas = [0.95, 0.90, 0.85]
 
@@ -26,7 +26,7 @@ def load_data(species, epsilon):
     return prcsd_data
 
 def get_sites(species, gamma):
-    with open(f'Results/{species}Results_E_0.116.pickle', 'rb') as handle1:
+    with open(f'Results/AlgE{epsilon}/{species}Results_E_{epsilon}.pickle', 'rb') as handle1:
         b1 = pickle.load(handle1)
 
     sites = list(filter(lambda x: type(x)==list, b1[gamma]))
@@ -52,12 +52,12 @@ def entr_ordering(data, sites):
 			Y = []
 			for k in new_cluster:
 				Y.append([d2[k] for d2 in data])
-			H_y = joint_entr(*Y)
 
+			H_y = joint_entr(*Y)
 			H_ind = shannon_entr([d3[i] for d3 in data])
 
 			denom = (H_ind+H_y)/2
-			statistic = (H_ind-(H_all-H_y))/(denom)
+			statistic = (H_all-H_y)
 			unsorted_l.append(statistic)
 
 		sorted_l = unsorted_l.copy()
@@ -111,7 +111,7 @@ if __name__=='__main__':
 			# print(sites)
 			# print(len(data), len(data[0]))
 			RES = entr_ordering(data, sites)
-			with open(f'Results/InfRankings/R2/{species}_E{epsilon}_G{gamma}_Ranking.pickle', 'wb') as handle:
+			with open(f'Results/InfRankings/R4/{species}_E{epsilon}_G{gamma}_Ranking.pickle', 'wb') as handle:
 				pickle.dump(RES, handle)
 
 	# for species in species_list:

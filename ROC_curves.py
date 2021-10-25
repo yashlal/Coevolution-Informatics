@@ -4,7 +4,8 @@ import scikitplot as skplt
 import pickle
 
 species = 'Bacteroidota'
-with open(f'Results/{species}Results_E_0.116.pickle', 'rb') as handle1:
+epsilon = 0.232
+with open(f'Results/AlgE{epsilon}/{species}Results_E_{epsilon}.pickle', 'rb') as handle1:
     b1 = pickle.load(handle1)
 
 gammas = [0.70,0.75,0.80,0.85,0.90,0.95]
