@@ -148,7 +148,7 @@ def alg(MI_list_, indices_, cols_, gammas_):
 
 if __name__=='__main__':
     epsilon, gammas = 1.16, [0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
-    all_species = ['Bacteroidota']
+    all_species = ['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota']
 
     for species in all_species:
         print(f'-------------------------------RUNNING SPECIES {species}!-------------------------------')
