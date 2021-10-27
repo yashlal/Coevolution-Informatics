@@ -9,12 +9,13 @@ from Bio import SeqIO
 from tqdm.contrib.concurrent import process_map
 import pandas as pd
 from datetime import datetime
-# import RNA
+import itertools
+import RNA
 
 bases = ['A','G','C','T']
 safe = ['A','G','C','T', '-', '.']
 blanks = ['-','.']
-species = ['Bacteroidota']
+species = ['Cyanobacteria']
 
 def process_val(raw_input):
     val = []
@@ -58,6 +59,24 @@ def MFE_func_all(s, pxns):
 
     return MFE_list, ref_val
 
+def new_MFE_func(s, pairs):
+    ref_input = ''.join(s)
+    ref_val = RNA.fold(ref_input)[1]
+
+    MFE_list = []
+    for x in pairs:
+        if x=='BLANK':
+            MFE_list.append(np.nan)
+        else:
+            inp1 = ''.join(mutate(x[0], s))
+            inp2 = ''.join(mutate(x[1], s))
+            val1 = RNA.fold(inp)[1]
+            val2 = RNA.fold(inp)[1]
+            value_for_dict = (abs(val1-ref_val) + abs(val2-ref_val)) / 2
+            MFE_list.append(value_for_dict)
+
+    return MFE_list, ref_val
+
 def run_sequence(seq, sites):
     site_nums = []
     pure_seq_l = []
@@ -78,6 +97,27 @@ def run_sequence(seq, sites):
 
     return MFE_vals, rv
 
+def new_run_sequence(seq, sites):
+    pairs = list(itertools.combinations(sites,2))
+
+    site_nums = []
+    pure_seq_l = []
+
+    for i in range(len(seq)):
+        if seq[i] not in blanks:
+            site_nums.append(i)
+            pure_seq_l.append(seq[i])
+
+    pairs_2 = []
+    for pair in pairs:
+        try:
+            pairs_2.append((site_nums.index(pair[0]), site_nums.index(pair[1])))
+        except:
+            pairs_2.append('BLANK')
+
+    MFE_vals, rv = new_MFE_func(pure_seq_l, pairs_2)
+    return MFE_vals, rv
+
 if __name__=='__main__':
     now = datetime.now()
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
@@ -91,6 +131,7 @@ if __name__=='__main__':
         sites = list(modules.flatten(b))
 
         sites=sites
+        pairs = list(itertools.combinations(sites,2))
 
         with open(f'data/SILVA_138.1_{spec}.fasta') as handle:
             data = list(SeqIO.parse(handle, "fasta"))
@@ -108,16 +149,20 @@ if __name__=='__main__':
         index_col = []
 
         pool_input = []
-
-        for j in range(50):
+        c=0
+        j=0
+        while c<20:
             if j not in bad_seqs:
+                c += 1
                 index_col.append(j)
                 pool_input.append((str(data[j].seq), sites))
+            j += 1
 
         with multiprocessing.Pool() as pool:
-            pool_output = pool.starmap(run_sequence, pool_input)
+            pool_output = pool.starmap(new_run_sequence, pool_input)
+
         formatted_output = [[y]+x for x,y in pool_output]
-        columns_labels = ['REFERENCE']+[str(_) for _ in sites]
+        columns_labels = ['REFERENCE']+[str(_) for _ in pairs]
         results_df = pd.DataFrame(formatted_output, index=index_col, columns=columns_labels)
 
         results_df.to_excel(f'MFE/{spec}_MFE50.xlsx')
