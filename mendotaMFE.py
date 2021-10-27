@@ -70,8 +70,8 @@ def new_MFE_func(s, pairs):
         else:
             inp1 = ''.join(mutate(x[0], s))
             inp2 = ''.join(mutate(x[1], s))
-            val1 = RNA.fold(inp)[1]
-            val2 = RNA.fold(inp)[1]
+            val1 = RNA.fold(inp1)[1]
+            val2 = RNA.fold(inp2)[1]
             value_for_dict = (abs(val1-ref_val) + abs(val2-ref_val)) / 2
             MFE_list.append(value_for_dict)
 
