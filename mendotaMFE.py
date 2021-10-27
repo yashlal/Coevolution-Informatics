@@ -125,7 +125,7 @@ if __name__=='__main__':
 
     b = []
     for spec in species:
-        with open(f'Results/{spec}Results_E_0.116.pickle', 'rb') as handle:
+        with open(f'{spec}Results_E_0.116.pickle', 'rb') as handle:
             b.append(pickle.load(handle)[0.95])
 
         sites = list(modules.flatten(b))
@@ -165,7 +165,7 @@ if __name__=='__main__':
         columns_labels = ['REFERENCE']+[str(_) for _ in pairs]
         results_df = pd.DataFrame(formatted_output, index=index_col, columns=columns_labels)
 
-        results_df.to_excel(f'MFE/{spec}_MFE50.xlsx')
+        results_df.to_excel(f'New_{spec}_MFE50.xlsx')
         print('____________________________________________________________________________')
         print(f'{spec} IS FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         now = datetime.now()
