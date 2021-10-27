@@ -125,7 +125,7 @@ if __name__=='__main__':
 
     b = []
     for spec in species:
-        with open(f'{spec}Results_E_0.116.pickle', 'rb') as handle:
+        with open(f'{spec}Results_E_0.232.pickle', 'rb') as handle:
             b.append(pickle.load(handle)[0.95])
 
         sites = list(modules.flatten(b))
