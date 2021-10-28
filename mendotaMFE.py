@@ -128,10 +128,16 @@ if __name__=='__main__':
         with open(f'{spec}Results_E_0.232.pickle', 'rb') as handle:
             b.append(pickle.load(handle)[0.95])
 
-        sites = list(modules.flatten(b))
+        sites = list(filter(lambda x: type(x)==list, b))
+        nonsites = []
+        for x in sites:
+            if x not in sites:
+                nonsites.append(x)
 
-        sites=sites
-        pairs = list(itertools.combinations(sites,2))
+        l = floor(len(nonsites)/12)
+        nonsites = rd.sample(nonsites, l)
+        all_sites=sites+nonsites
+        pairs = list(itertools.combinations(all_sites,2))
 
         with open(f'data/SILVA_138.1_{spec}.fasta') as handle:
             data = list(SeqIO.parse(handle, "fasta"))
