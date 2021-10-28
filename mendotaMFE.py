@@ -110,8 +110,7 @@ def new_MFE_func(data, pair):
             sum += ((abs(val1-ref_val) + abs(val2-ref_val)) / 2)
         j += 1
 
-    print(c)
-    return sum/(c+1)
+    return c, sum/(c+1)
 
 if __name__=='__main__':
     now = datetime.now()
@@ -139,12 +138,12 @@ if __name__=='__main__':
         data = SeqIO.parse(f'data/SILVA_138.1_{spec}.fasta',"fasta")
         for sample in data:
             data_list.append(str(sample.seq))
-
+        data_list = data_list[0:2000]
         pool_input = [(data_list, pair) for pair in pairs]
         with multiprocessing.Pool() as pool:
             pool_output = pool.starmap(new_MFE_func, pool_input)
 
-        formatted_output = [(pairs[i], pool_output[i]) for i in range(len(pairs))]
+        formatted_output = [(pairs[i], pool_output[i][0], pool_output[i][1]) for i in range(len(pairs))]
 
         with open(f'{spec}_PW_MFE.pickle', 'wb') as handle2:
             pickle.dump(formatted_output, handle2)
