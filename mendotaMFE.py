@@ -110,6 +110,7 @@ def new_MFE_func(data, pair):
             sum += ((abs(val1-ref_val) + abs(val2-ref_val)) / 2)
         j += 1
 
+    print(c)
     return sum/(c+1)
 
 if __name__=='__main__':
