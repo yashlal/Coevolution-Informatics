@@ -103,8 +103,8 @@ def new_MFE_func(data, pair):
             ref_input = ''.join(pure_seq_l)
             ref_val = RNA.fold(ref_input)[1]
 
-            inp1 = ''.join(mutate(pair[0], pure_seq_l))
-            inp2 = ''.join(mutate(pair[1], pure_seq_l))
+            inp1 = ''.join(mutate(pair_2[0], pure_seq_l))
+            inp2 = ''.join(mutate(pair_2[1], pure_seq_l))
             val1 = RNA.fold(inp1)[1]
             val2 = RNA.fold(inp2)[1]
             sum += ((abs(val1-ref_val) + abs(val2-ref_val)) / 2)
