@@ -130,7 +130,7 @@ if __name__=='__main__':
 
         l = math.floor(len(nonsites)/12)
         nonsites = rd.sample(nonsites, l)
-        all_sites=sites+nonsites
+        all_sites = sites+nonsites
         pairs = list(itertools.combinations(all_sites,2))
 
         data_list = []
@@ -138,7 +138,7 @@ if __name__=='__main__':
         for sample in data:
             data_list.append(str(sample.seq))
 
-        pool_input = [(data_list, pair), for pair in pairs]
+        pool_input = [(data_list, pair) for pair in pairs]
         with multiprocessing.Pool() as pool:
             pool_output = pool.starmap(new_MFE_func, pool_input)
 
