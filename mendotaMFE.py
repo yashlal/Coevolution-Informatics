@@ -11,6 +11,7 @@ import pandas as pd
 from datetime import datetime
 import itertools
 import RNA
+import math
 
 bases = ['A','G','C','T']
 safe = ['A','G','C','T', '-', '.']
@@ -134,7 +135,7 @@ if __name__=='__main__':
             if x not in sites:
                 nonsites.append(x)
 
-        l = floor(len(nonsites)/12)
+        l = math.floor(len(nonsites)/12)
         nonsites = rd.sample(nonsites, l)
         all_sites=sites+nonsites
         pairs = list(itertools.combinations(all_sites,2))
