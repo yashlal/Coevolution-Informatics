@@ -123,9 +123,10 @@ if __name__=='__main__':
         with open(f'{spec}Results_E_0.232.pickle', 'rb') as handle:
             b.append(pickle.load(handle)[0.95])
 
-        sites = list(filter(lambda x: type(x)==list, b))
+        sites = list(modules.flatten(list(filter(lambda x: type(x)==list, b))))
+        b = list(modules.flatten(b))
         nonsites = []
-        for x in sites:
+        for x in b:
             if x not in sites:
                 nonsites.append(x)
 
