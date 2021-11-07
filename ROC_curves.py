@@ -4,7 +4,7 @@ import scikitplot as skplt
 import pickle
 
 all_species = ['Fusobacteriota', 'Bacteroidota', 'Cyanobacteria']
-epsilon = 1.16
+epsilon = 0.116
 
 gammas = [0.70,0.75,0.80,0.85,0.90,0.95]
 
@@ -52,8 +52,9 @@ def main():
             ax_inst = skplt.metrics.plot_roc(y_true=y_true, y_probas=y_probas, classes_to_plot=[], plot_macro=False, plot_micro=True)
             ax_inst.set(xlabel=None)
             ax_inst.set(ylabel=None)
-            plt.show()
-            # plt.savefig(f'ROC/E{epsilon}/S{species}_G{gamma}_E{epsilon}.eps', format='eps')
+            ax_inst.set(title=None)
+            # plt.show()
+            plt.savefig(f'ROC/E{epsilon}/S{species}_G{gamma}_E{epsilon}.eps', format='eps')
 
 if __name__=='__main__':
     main()
