@@ -48,8 +48,10 @@ if __name__=='__main__':
                     else:
                         break
 
-        for pair in tups:
-            i,j = pair
+        for pair_ind in range(len(tups)):
+        	n_tot = len(tups)
+        	print(f"{pair_ind} / {n_tot}")
+            i,j = tups[pair_ind]
 
             seqinp = ''.join(list(filter(lambda x: x not in blanks, seq)))
             inp1 = ''.join(list(filter(lambda x: x not in blanks, mendotaMFE.mutate(i, seq))))
