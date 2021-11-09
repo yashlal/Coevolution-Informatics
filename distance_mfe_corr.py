@@ -5,6 +5,7 @@ from Bio import SeqIO
 import pickle
 import modules
 import mendotaMFE
+import RNA
 import numpy as np
 
 blanks = ['-','.']
@@ -42,7 +43,7 @@ if __name__=='__main__':
             i,j=tup
             if (seq[i] not in blanks) and (seq[j] not in blanks):
                 if (i in ref_l) and (j in ref_l):
-                    if len(tups<1000):
+                    if len(tups)<1000:
                         tups.append(tup)
                     else:
                         break
@@ -57,8 +58,8 @@ if __name__=='__main__':
             mfe2 = abs(RNA.fold(inp2)[1] - RNA.fold(seqinp)[1])
             mfe_stat = (mfe1 + mfe2)/2
 
-            coord1 = coords[ref_l.ind(i)]
-            coord2 = coords[ref_l.ind(j)]
+            coord1 = coords[ref_l.index(i)]
+            coord2 = coords[ref_l.index(j)]
             dist_stat = np.linalg.norm(coord1-coord2)
 
             print((mfe_stat, dist_stat))
