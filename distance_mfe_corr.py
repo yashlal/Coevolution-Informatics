@@ -50,9 +50,10 @@ if __name__=='__main__':
         for pair in tups:
             i,j = pair
 
-            inp1 = ''.join(mendotaMFE.mutate(i, seq))
-            inp2 = ''.join(mendotaMFE.mutate(j, seq))
-            seqinp = ''.join(seq)
+            seqinp = ''.join(list(filter(lambda x: x not in blanks, seq)))
+            inp1 = ''.join(list(filter(lambda x: x not in blanks, mendotaMFE.mutate(i, seq))))
+            inp2 = ''.join(list(filter(lambda x: x not in blanks, mendotaMFE.mutate(j, seq))))
+
             mfe1 = abs(RNA.fold(inp1)[1] - RNA.fold(seqinp)[1])
             mfe2 = abs(RNA.fold(inp2)[1] - RNA.fold(seqinp)[1])
             mfe_stat = (mfe1 + mfe2)/2
