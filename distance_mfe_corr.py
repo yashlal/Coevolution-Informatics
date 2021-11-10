@@ -49,8 +49,8 @@ if __name__=='__main__':
                         break
 
         for pair_ind in range(len(tups)):
-        	n_tot = len(tups)
-        	print(f"{pair_ind} / {n_tot}")
+            n_tot = len(tups)
+            print(f"{pair_ind} / {n_tot}")
             i,j = tups[pair_ind]
 
             seqinp = ''.join(list(filter(lambda x: x not in blanks, seq)))
