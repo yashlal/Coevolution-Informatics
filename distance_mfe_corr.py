@@ -43,7 +43,7 @@ if __name__=='__main__':
             i,j=tup
             if (seq[i] not in blanks) and (seq[j] not in blanks):
                 if (i in ref_l) and (j in ref_l):
-                    if len(tups)<1000:
+                    if len(tups)<400:
                         tups.append(tup)
                     else:
                         break
@@ -63,5 +63,7 @@ if __name__=='__main__':
             coord2 = coords[ref_l.index(j)]
             dist_stat = np.linalg.norm(coord1-coord2)
 
-            print((mfe_stat, dist_stat))
             stats[-1].append((mfe_stat, dist_stat))
+
+            with open('Results/distance_mfe_corr.pickle', 'wb') as handle2:
+                pickle.dump(stats, handle2)
