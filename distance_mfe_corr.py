@@ -9,6 +9,7 @@ import RNA
 import numpy as np
 
 blanks = ['-','.']
+bases = ["A",'G','C','T']
 
 gamma = 0.85
 epsilon = 0.232
@@ -41,7 +42,7 @@ if __name__=='__main__':
         tups = []
         for tup in comb:
             i,j=tup
-            if (seq[i] not in blanks) and (seq[j] not in blanks):
+            if (seq[i] in bases) and (seq[j] in bases):
                 if (i in ref_l) and (j in ref_l):
                     if len(tups)<400:
                         tups.append(tup)
@@ -53,9 +54,9 @@ if __name__=='__main__':
             print(f"{pair_ind} / {n_tot}")
             i,j = tups[pair_ind]
 
-            seqinp = ''.join(list(filter(lambda x: x not in blanks, seq)))
-            inp1 = ''.join(list(filter(lambda x: x not in blanks, mendotaMFE.mutate(i, seq))))
-            inp2 = ''.join(list(filter(lambda x: x not in blanks, mendotaMFE.mutate(j, seq))))
+            seqinp = ''.join(list(filter(lambda x: x in bases, seq)))
+            inp1 = ''.join(list(filter(lambda x: x in bases, mendotaMFE.mutate(i, seq))))
+            inp2 = ''.join(list(filter(lambda x: x in bases, mendotaMFE.mutate(j, seq))))
 
             mfe1 = abs(RNA.fold(inp1)[1] - RNA.fold(seqinp)[1])
             mfe2 = abs(RNA.fold(inp2)[1] - RNA.fold(seqinp)[1])
