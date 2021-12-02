@@ -1,0 +1,9 @@
+Species:Fusobacteriota | Epsilon:0.116 | N: 676
+Species:Fusobacteriota | Epsilon:0.232 | N: 589
+Species:Fusobacteriota | Epsilon:1.16 | N: 113
+Species:Bacteroidota | Epsilon:0.116 | N: 992
+Species:Bacteroidota | Epsilon:0.232 | N: 858
+Species:Bacteroidota | Epsilon:1.16 | N: 341
+Species:Cyanobacteria | Epsilon:0.116 | N: 1100
+Species:Cyanobacteria | Epsilon:0.232 | N: 840
+Species:Cyanobacteria | Epsilon:1.16 | N: 219
