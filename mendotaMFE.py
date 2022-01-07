@@ -69,7 +69,6 @@ if __name__=='__main__':
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
     print("STARTING:", date_time)
 
-    b = []
     for spec in species:
 
         data_list = []
@@ -87,7 +86,7 @@ if __name__=='__main__':
         chosen_seq = data_list[ind]
 
         with open(f'Results/AlgE0.232/{spec}Results_E_0.232.pickle', 'rb') as handle:
-            b.append(pickle.load(handle)[0.95])
+            b = pickle.load(handle)[0.95]
 
         sites = list(modules.flatten(list(filter(lambda x: type(x)==list, b))))
         b = list(modules.flatten(b))
