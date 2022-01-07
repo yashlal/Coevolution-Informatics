@@ -86,7 +86,7 @@ if __name__=='__main__':
 
         chosen_seq = data_list[ind]
 
-        with open(f'{spec}Results_E_0.232.pickle', 'rb') as handle:
+        with open(f'Results/AlgE0.232/{spec}Results_E_0.232.pickle', 'rb') as handle:
             b.append(pickle.load(handle)[0.95])
 
         sites = list(modules.flatten(list(filter(lambda x: type(x)==list, b))))
