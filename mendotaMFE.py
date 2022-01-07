@@ -98,7 +98,8 @@ if __name__=='__main__':
 
         sites = list(filter(lambda x: chosen_seq[x] in bases, sites))
         nonsites = list(filter(lambda x: chosen_seq[x] in bases, nonsites))
-
+        print(sites, nonsites)
+        
         l = 10
 
         pairs_real_real = rd.sample(list(itertools.combinations(sites,2)), l)
