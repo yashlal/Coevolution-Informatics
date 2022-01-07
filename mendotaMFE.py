@@ -19,7 +19,7 @@ pair_combs = ['AA','AG','AC','AT','GA','GG','GC','GT','CA','CG','CC','CT','TA','
 blanks = ['-','.']
 species = ['Cyanobacteria']
 
-def setup(raw_seq, all_pairs):
+def setup(raw_seq, pair):
     editable_seq = list(raw_seq)
 
     new_coords = []
@@ -30,14 +30,11 @@ def setup(raw_seq, all_pairs):
             new_coords.append(i)
             clean_seq.append(bp)
 
-    converted_pairs = []
-    for pair in all_pairs:
-        if (pair[0] in new_coords) and (pair[1] in new_coords):
-            converted_pairs.append((new_coords.index(pair[0])), new_coords.index(pair[1]))
+    converted_pair = (new_coords.index(pair[0])), new_coords.index(pair[1])
 
-    return clean_seq, converted_pairs
+    return clean_seq, converted_pair
 
-def all_mutations_pair(pxns, full_seq):
+def all_mutations_pair(full_seq, pxns):
     i,j = pxns
     all_seqs = []
 
@@ -54,10 +51,21 @@ def run_pair(all_seqs_list):
     vals = []
     for seq in all_seqs_list:
         val = RNA.fold(''.join(seq))[1]
+        vals.append(val)
     return vals
 
-def mp_func(pair, seq):
-    all_seqs = all_mutations_pair(pair, seq)
+def mp_func(pair, data_list):
+    flag = False
+    c = 0
+    while not flag:
+        if (data_list[c][pair[0]] in bases) and (data_list[c][pair[1]] in bases):
+            flag = True
+        else:
+            c += 1
+
+    final_seq = data_list[c]
+    clean_seq, converted_pair = setup(final_seq, pair)
+    all_seqs = all_mutations_pair(clean_seq, converted_pair)
     vals = run_pair(all_seqs)
 
     return (pair, vals)
@@ -75,16 +83,7 @@ if __name__=='__main__':
         data = SeqIO.parse(f'data/SILVA_138.1_{spec}.fasta',"fasta")
         for sample in data:
             data_list.append(str(sample.seq))
-
-        flag=False
-        ind=0
-        while flag==False:
-            ind += 1
-            if all([p in safe for p in data_list[ind]]):
-                flag=True
-
-        chosen_seq = data_list[ind]
-
+        data_list = data_list[0:2000]
         with open(f'Results/AlgE0.232/{spec}Results_E_0.232.pickle', 'rb') as handle:
             b = pickle.load(handle)[0.95]
 
@@ -95,28 +94,24 @@ if __name__=='__main__':
             if x not in sites:
                 nonsites.append(x)
 
-        sites = list(filter(lambda x: chosen_seq[x] in bases, sites))
-        nonsites = list(filter(lambda x: chosen_seq[x] in bases, nonsites))
-        print(sites)
-        l = 10
+        pairs_real_real = list(itertools.combinations(sites,2))
+        pairs_real_fake = list(itertools.product(sites, nonsites))
+        pairs_fake_fake = list(itertools.combinations(nonsites,2))
 
-        pairs_real_real = rd.sample(list(itertools.combinations(sites,2)), l)
-        pairs_real_fake = rd.sample(list(itertools.product(sites, nonsites)), l)
-        pairs_fake_fake = rd.sample(list(itertools.combinations(nonsites,2)), l)
+        cap = 5
+
+        pairs_real_real = rd.sample(pairs_real_real, min(cap, len(pairs_real_real)))
+        pairs_real_fake = rd.sample(pairs_real_real, min(cap, len(pairs_real_fake)))
+        pairs_fake_fake = rd.sample(pairs_real_real, min(cap, len(pairs_fake_fake)))
 
         all_pairs = pairs_real_real + pairs_real_fake + pairs_fake_fake
 
-        clean_seq, converted_pairs = setup(chosen_seq, all_pairs)
-
-
-        pool_input = [(input_pair, clean_seq) for input_pair in converted_pairsirs]
+        pool_input = [(input_pair, data_list) for input_pair in all_pairs]
         with multiprocessing.Pool() as pool:
             pool_output = pool.starmap(mp_func, pool_input)
 
-        formatted_output = [(tup[0], tup[1], *vals) for tup in pool_output]
-
         with open(f'Results/Dump/{spec}_PW_MFE.pickle', 'wb') as handle2:
-            pickle.dump(formatted_output, handle2)
+            pickle.dump(pool_output, handle2)
 
         print('____________________________________________________________________________')
         print(f'{spec} IS FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
