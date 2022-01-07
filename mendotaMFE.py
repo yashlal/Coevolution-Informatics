@@ -57,18 +57,20 @@ def run_pair(all_seqs_list):
 def mp_func(pair, data_list):
     flag = False
     c = 0
-    while not flag:
+    while (not flag) and (c<50000):
         if (data_list[c][pair[0]] in bases) and (data_list[c][pair[1]] in bases):
             flag = True
         else:
             c += 1
+    if c==50000:
+        return (pair, 'SKIP')
+    else:
+        final_seq = data_list[c]
+        clean_seq, converted_pair = setup(final_seq, pair)
+        all_seqs = all_mutations_pair(clean_seq, converted_pair)
+        vals = run_pair(all_seqs)
 
-    final_seq = data_list[c]
-    clean_seq, converted_pair = setup(final_seq, pair)
-    all_seqs = all_mutations_pair(clean_seq, converted_pair)
-    vals = run_pair(all_seqs)
-
-    return (pair, vals)
+        return (pair, vals)
 
 
 if __name__=='__main__':
@@ -98,7 +100,7 @@ if __name__=='__main__':
         pairs_real_fake = list(itertools.product(sites, nonsites))
         pairs_fake_fake = list(itertools.combinations(nonsites,2))
 
-        cap = 200
+        cap = 120
 
         pairs_real_real = rd.sample(pairs_real_real, min(cap, len(pairs_real_real)))
         pairs_real_fake = rd.sample(pairs_real_fake, min(cap, len(pairs_real_fake)))
