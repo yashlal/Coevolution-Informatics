@@ -17,7 +17,7 @@ bases = ['A','G','C','T']
 safe = ['A','G','C','T', '-', '.']
 pair_combs = ['AA','AG','AC','AT','GA','GG','GC','GT','CA','CG','CC','CT','TA','TG','TC','TT']
 blanks = ['-','.']
-species = ['Cyanobacteria']
+species = ['Cyanobacteria', 'Fusobacteriota', 'Bacteroidota']
 
 def setup(raw_seq, pair):
     editable_seq = list(raw_seq)
@@ -98,7 +98,7 @@ if __name__=='__main__':
         pairs_real_fake = list(itertools.product(sites, nonsites))
         pairs_fake_fake = list(itertools.combinations(nonsites,2))
 
-        cap = 5
+        cap = 1000
 
         pairs_real_real = rd.sample(pairs_real_real, min(cap, len(pairs_real_real)))
         pairs_real_fake = rd.sample(pairs_real_fake, min(cap, len(pairs_real_fake)))
