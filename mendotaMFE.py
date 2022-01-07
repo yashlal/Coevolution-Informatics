@@ -10,115 +10,82 @@ from tqdm.contrib.concurrent import process_map
 import pandas as pd
 from datetime import datetime
 import itertools
-import RNA
+# import RNA
 import math
 
 bases = ['A','G','C','T']
 safe = ['A','G','C','T', '-', '.']
+pair_combs = ['AA','AG','AC','AT','GA','GG','GC','GT','CA','CG','CC','CT','TA','TG','TC','TT']
 blanks = ['-','.']
 species = ['Cyanobacteria']
 
-def process_val(raw_input):
-    val = []
-    s=0
-    for char in raw_input:
-        if char=='-':
-            s=1
-        if s:
-            if char!=')':
-                val.append(char)
-            else:
-                s=0
-    val = float(''.join(val))
-    return val
+def setup(raw_seq, all_pairs):
+    editable_seq = list(raw_seq)
 
-def mutate(pxn, full_seq):
-    new_s = full_seq.copy()
+    new_coords = []
+    clean_seq = []
+    for i in range(len(editable_seq)):
+        bp = editable_seq[i]
+        if bp in bases:
+            new_coords.append(i)
+            clean_seq.append(bp)
 
-    new_l = bases.copy()
-    new_l.remove(new_s[pxn])
+    converted_pairs = []
+    for pair in all_pairs:
+        if (pair[0] in new_coords) and (pair[1] in new_coords):
+            converted_pairs.append((new_coords.index(pair[0])), new_coords.index(pair[1]))
 
-    rand = rd.randint(0,2)
-    new_s[pxn] = new_l[rand]
+    return clean_seq, converted_pairs
 
-    return new_s
+def all_mutations_pair(pxns, full_seq):
+    i,j = pxns
+    all_seqs = []
 
-def MFE_func_all(s, pxns):
-    ref_input = ''.join(s)
-    (nonsense, MFE_val) = RNA.fold(ref_input)
-    ref_val = MFE_val
+    for comb in pair_combs:
+        new_seq = full_seq.copy()
+        new_seq[i] = comb[0]
+        new_seq[j] = comb[1]
 
-    MFE_list = []
-    for x in pxns:
-        if x=='BLANK':
-            MFE_list.append(np.nan)
-        else:
-            inp = ''.join(mutate(x,s))
-            (nonsense2, MFE_val2) = RNA.fold(inp)
-            value_for_dict = MFE_val2
-            MFE_list.append(value_for_dict-ref_val)
+        all_seqs.append(new_seq)
+    all_seqs.append(full_seq)
+    return all_seqs
 
-    return MFE_list, ref_val
+def run_pair(all_seqs_list):
+    vals = []
+    for seq in all_seqs_list:
+        val = RNA.fold(''.join(seq))[1]
+    return vals
 
-def run_sequence(seq, sites):
-    site_nums = []
-    pure_seq_l = []
+def mp_func(pair, seq):
+    all_seqs = all_mutations_pair(pair, seq)
+    vals = run_pair(all_seqs)
 
-    for i in range(len(seq)):
-        if seq[i] not in blanks:
-            site_nums.append(i)
-            pure_seq_l.append(seq[i])
+    return (pair, vals)
 
-    sites_2 = []
-    for site in sites:
-        try:
-            sites_2.append(site_nums.index(site))
-        except:
-            sites_2.append('BLANK')
-
-    MFE_vals, rv = MFE_func_all(pure_seq_l, sites_2)
-
-    return MFE_vals, rv
-
-def new_MFE_func(data, pair):
-    c = 0
-    j = 0
-    sum = 0
-
-    while c<20 and j<len(data):
-        s = data[j]
-
-        if (s[pair[0]] in bases) and (s[pair[1]] in bases):
-            c += 1
-
-            site_nums = []
-            pure_seq_l = []
-            for i in range(len(s)):
-                if s[i] in bases:
-                    site_nums.append(i)
-                    pure_seq_l.append(s[i])
-
-            pair_2 = (site_nums.index(pair[0]), site_nums.index(pair[1]))
-
-            ref_input = ''.join(pure_seq_l)
-            ref_val = RNA.fold(ref_input)[1]
-
-            inp1 = ''.join(mutate(pair_2[0], pure_seq_l))
-            inp2 = ''.join(mutate(pair_2[1], pure_seq_l))
-            val1 = RNA.fold(inp1)[1]
-            val2 = RNA.fold(inp2)[1]
-            sum += ((abs(val1-ref_val) + abs(val2-ref_val)) / 2)
-        j += 1
-
-    return c, sum/(c+1)
 
 if __name__=='__main__':
+    #printing start time
     now = datetime.now()
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
     print("STARTING:", date_time)
 
     b = []
     for spec in species:
+
+        data_list = []
+        data = SeqIO.parse(f'data/SILVA_138.1_{spec}.fasta',"fasta")
+        for sample in data:
+            data_list.append(str(sample.seq))
+
+        flag=False
+        ind=0
+        while flag==False:
+            ind += 1
+            if all([p in safe for p in data_list[ind]]):
+                flag=True
+
+        chosen_seq = seq[ind]
+
         with open(f'{spec}Results_E_0.232.pickle', 'rb') as handle:
             b.append(pickle.load(handle)[0.95])
 
@@ -129,23 +96,27 @@ if __name__=='__main__':
             if x not in sites:
                 nonsites.append(x)
 
-        l = math.floor(len(nonsites)/12)
-        nonsites = rd.sample(nonsites, l)
-        all_sites = sites+nonsites
-        pairs = list(itertools.combinations(all_sites,2))
+        sites = list(filter(lambda x: x in bases, sites))
+        nonsites = list(filter(lambda x: x in bases, nonsites))
 
-        data_list = []
-        data = SeqIO.parse(f'data/SILVA_138.1_{spec}.fasta',"fasta")
-        for sample in data:
-            data_list.append(str(sample.seq))
-        data_list = data_list[0:2000]
-        pool_input = [(data_list, pair) for pair in pairs]
+        l = 10
+
+        pairs_real_real = rd.sample(list(itertools.combinations(sites,2)), l)
+        pairs_real_fake = rd.sample(list(itertools.product(sites, nonsites)), l)
+        pairs_fake_fake = rd.sample(list(itertools.combinations(nonsites,2)), l)
+
+        all_pairs = pairs_real_real + pairs_real_fake + pairs_fake_fake
+
+        clean_seq, converted_pairs = setup(chosen_seq, all_pairs)
+
+
+        pool_input = [(input_pair, clean_seq) for input_pair in converted_pairsirs]
         with multiprocessing.Pool() as pool:
-            pool_output = pool.starmap(new_MFE_func, pool_input)
+            pool_output = pool.starmap(mp_func, pool_input)
 
-        formatted_output = [(pairs[i], pool_output[i][0], pool_output[i][1]) for i in range(len(pairs))]
+        formatted_output = [(tup[0], tup[1], *vals) for tup in pool_output]
 
-        with open(f'{spec}_PW_MFE.pickle', 'wb') as handle2:
+        with open(f'Results/Dump/{spec}_PW_MFE.pickle', 'wb') as handle2:
             pickle.dump(formatted_output, handle2)
 
         print('____________________________________________________________________________')
