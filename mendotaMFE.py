@@ -96,8 +96,8 @@ if __name__=='__main__':
             if x not in sites:
                 nonsites.append(x)
 
-        sites = list(filter(lambda x: x in bases, sites))
-        nonsites = list(filter(lambda x: x in bases, nonsites))
+        sites = list(filter(lambda x: chosen_seq[x] in bases, sites))
+        nonsites = list(filter(lambda x: chosen_seq[x] in bases, nonsites))
 
         l = 10
 
