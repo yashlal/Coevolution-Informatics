@@ -84,7 +84,7 @@ if __name__=='__main__':
             if all([p in safe for p in data_list[ind]]):
                 flag=True
 
-        chosen_seq = seq[ind]
+        chosen_seq = data_list[ind]
 
         with open(f'{spec}Results_E_0.232.pickle', 'rb') as handle:
             b.append(pickle.load(handle)[0.95])
