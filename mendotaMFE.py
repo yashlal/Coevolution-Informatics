@@ -101,8 +101,8 @@ if __name__=='__main__':
         cap = 5
 
         pairs_real_real = rd.sample(pairs_real_real, min(cap, len(pairs_real_real)))
-        pairs_real_fake = rd.sample(pairs_real_real, min(cap, len(pairs_real_fake)))
-        pairs_fake_fake = rd.sample(pairs_real_real, min(cap, len(pairs_fake_fake)))
+        pairs_real_fake = rd.sample(pairs_real_fake, min(cap, len(pairs_real_fake)))
+        pairs_fake_fake = rd.sample(pairs_fake_fake, min(cap, len(pairs_fake_fake)))
 
         all_pairs = pairs_real_real + pairs_real_fake + pairs_fake_fake
 
