@@ -100,7 +100,7 @@ if __name__=='__main__':
         pairs_real_fake = list(itertools.product(sites, nonsites))
         pairs_fake_fake = list(itertools.combinations(nonsites,2))
 
-        cap = 5000
+        cap = 10000
 
         pairs_real_real = rd.sample(pairs_real_real, min(cap, len(pairs_real_real)))
         pairs_real_fake = rd.sample(pairs_real_fake, min(cap, len(pairs_real_fake)))
