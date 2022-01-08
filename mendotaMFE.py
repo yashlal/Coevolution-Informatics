@@ -17,7 +17,7 @@ bases = ['A','G','C','T']
 safe = ['A','G','C','T', '-', '.']
 pair_combs = ['AA','AG','AC','AT','GA','GG','GC','GT','CA','CG','CC','CT','TA','TG','TC','TT']
 blanks = ['-','.']
-species = ['Cyanobacteria', 'Fusobacteriota', 'Bacteroidota']
+species = ['Cyanobacteria']
 
 def setup(raw_seq, pair):
     editable_seq = list(raw_seq)
@@ -57,12 +57,12 @@ def run_pair(all_seqs_list):
 def mp_func(pair, data_list):
     flag = False
     c = 0
-    while (not flag) and (c<50000):
+    while (not flag) and (c<2000):
         if (data_list[c][pair[0]] in bases) and (data_list[c][pair[1]] in bases):
             flag = True
         else:
             c += 1
-    if c==50000:
+    if c==2000:
         return (pair, 'SKIP')
     else:
         final_seq = data_list[c]
@@ -100,7 +100,7 @@ if __name__=='__main__':
         pairs_real_fake = list(itertools.product(sites, nonsites))
         pairs_fake_fake = list(itertools.combinations(nonsites,2))
 
-        cap = 120
+        cap = 5000
 
         pairs_real_real = rd.sample(pairs_real_real, min(cap, len(pairs_real_real)))
         pairs_real_fake = rd.sample(pairs_real_fake, min(cap, len(pairs_real_fake)))

@@ -38,7 +38,6 @@ def get_reference_dist():
 if __name__=='__main__':
 
     coords, ref_l = get_reference_dist()
-    print(ref_l)
 
     for species in species_list:
         for epsilon in epsilons:
