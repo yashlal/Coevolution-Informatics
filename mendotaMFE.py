@@ -79,13 +79,10 @@ if __name__=='__main__':
     print("STARTING:", date_time)
 
     for spec in species:
-        raw_data_list = []
-        data = list(SeqIO.parse(f'data/SILVA_138.1_{spec}.fasta',"fasta"))
-        for sample in data:
-            raw_data_list.append(str(sample.seq))
-        data_list = raw_data_list[0:2000]
-        with open(f'Results/AlgE0.232/{spec}Results_E_0.232.pickle', 'rb') as handle:
-            b = pickle.load(handle)[0.95]
+        with open(f'data/SILVA_138.1_{spec}.pickle', 'rb') as handle1:
+            data_list = pickle.load(handle1)
+        with open(f'Results/AlgE0.232/{spec}Results_E_0.232.pickle', 'rb') as handle2:
+            b = pickle.load(handle2)[0.95]
 
         sites = list(modules.flatten(list(filter(lambda x: type(x)==list, b))))
         b = list(modules.flatten(b))
