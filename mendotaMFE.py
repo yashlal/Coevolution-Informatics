@@ -12,6 +12,7 @@ from datetime import datetime
 import itertools
 import RNA
 import math
+from memory_profiler import profile
 
 bases = ['A','G','C','T']
 safe = ['A','G','C','T', '-', '.']
@@ -72,8 +73,8 @@ def mp_func(pair, data_list):
 
         return (pair, vals)
 
-
-if __name__=='__main__':
+@profile
+def main():
     #printing start time
     now = datetime.now()
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
@@ -121,3 +122,6 @@ if __name__=='__main__':
         date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
         print("End Time: ", date_time)
         print('____________________________________________________________________________')
+
+if __name__=='__main__':
+    main()
