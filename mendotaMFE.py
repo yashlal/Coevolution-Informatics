@@ -17,7 +17,7 @@ bases = ['A','G','C','T']
 safe = ['A','G','C','T', '-', '.']
 pair_combs = ['AA','AG','AC','AT','GA','GG','GC','GT','CA','CG','CC','CT','TA','TG','TC','TT']
 blanks = ['-','.']
-species = ['Fusobacteriota']
+species = ['Bacteroidota']
 
 def setup(raw_seq, pair):
     editable_seq = list(raw_seq)
