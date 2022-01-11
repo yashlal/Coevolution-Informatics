@@ -12,7 +12,6 @@ from datetime import datetime
 import itertools
 import RNA
 import math
-from memory_profiler import profile
 
 bases = ['A','G','C','T']
 safe = ['A','G','C','T', '-', '.']
@@ -73,55 +72,56 @@ def mp_func(pair, data_list):
 
         return (pair, vals)
 
-@profile
-def main():
-    #printing start time
+if __name__=='__main__':
+#printing start time
+now = datetime.now()
+date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+print("STARTING:", date_time)
+
+for spec in species:
+    raw_data_list = []
+    data = list(SeqIO.parse(f'data/SILVA_138.1_{spec}.fasta',"fasta"))
+    for sample in data:
+        raw_data_list.append(str(sample.seq))
+    data_list = raw_data_list[0:2000]
+    with open(f'Results/AlgE0.232/{spec}Results_E_0.232.pickle', 'rb') as handle:
+        b = pickle.load(handle)[0.95]
+
+    sites = list(modules.flatten(list(filter(lambda x: type(x)==list, b))))
+    b = list(modules.flatten(b))
+    nonsites = []
+    for x in b:
+        if x not in sites:
+            nonsites.append(x)
+
+    pairs_real_real = list(itertools.combinations(sites,2))
+    pairs_real_fake = list(itertools.product(sites, nonsites))
+    pairs_fake_fake = list(itertools.combinations(nonsites,2))
+
+    cap = 10000
+
+    pairs_real_real = rd.sample(pairs_real_real, min(cap, len(pairs_real_real)))
+    pairs_real_fake = rd.sample(pairs_real_fake, min(cap, len(pairs_real_fake)))
+    pairs_fake_fake = rd.sample(pairs_fake_fake, min(cap, len(pairs_fake_fake)))
+
+    all_pairs = pairs_real_real + pairs_real_fake + pairs_fake_fake
+
+    del pairs_real_real[:]
+    del pairs_real_fake[:]
+    del pairs_fake_fake[:]
+    del data[:]
+    del raw_data_list[:]
+
+    pool_input = [(input_pair, data_list) for input_pair in all_pairs]
+    with multiprocessing.Pool() as pool:
+        pool_output = pool.starmap(mp_func, pool_input)
+
+    with open(f'Results/Dump/{spec}_PW_MFE.pickle', 'wb') as handle2:
+        pickle.dump(pool_output, handle2)
+
+    print('____________________________________________________________________________')
+    print(f'{spec} IS FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     now = datetime.now()
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-    print("STARTING:", date_time)
-
-    for spec in species:
-
-        data_list = []
-        data = SeqIO.parse(f'data/SILVA_138.1_{spec}.fasta',"fasta")
-        for sample in data:
-            data_list.append(str(sample.seq))
-        data_list = data_list[0:2000]
-        with open(f'Results/AlgE0.232/{spec}Results_E_0.232.pickle', 'rb') as handle:
-            b = pickle.load(handle)[0.95]
-
-        sites = list(modules.flatten(list(filter(lambda x: type(x)==list, b))))
-        b = list(modules.flatten(b))
-        nonsites = []
-        for x in b:
-            if x not in sites:
-                nonsites.append(x)
-
-        pairs_real_real = list(itertools.combinations(sites,2))
-        pairs_real_fake = list(itertools.product(sites, nonsites))
-        pairs_fake_fake = list(itertools.combinations(nonsites,2))
-
-        cap = 10000
-
-        pairs_real_real = rd.sample(pairs_real_real, min(cap, len(pairs_real_real)))
-        pairs_real_fake = rd.sample(pairs_real_fake, min(cap, len(pairs_real_fake)))
-        pairs_fake_fake = rd.sample(pairs_fake_fake, min(cap, len(pairs_fake_fake)))
-
-        all_pairs = pairs_real_real + pairs_real_fake + pairs_fake_fake
-
-        pool_input = [(input_pair, data_list) for input_pair in all_pairs]
-        with multiprocessing.Pool() as pool:
-            pool_output = pool.starmap(mp_func, pool_input)
-
-        with open(f'Results/Dump/{spec}_PW_MFE.pickle', 'wb') as handle2:
-            pickle.dump(pool_output, handle2)
-
-        print('____________________________________________________________________________')
-        print(f'{spec} IS FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-        now = datetime.now()
-        date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-        print("End Time: ", date_time)
-        print('____________________________________________________________________________')
-
-if __name__=='__main__':
-    main()
+    print("End Time: ", date_time)
+    print('____________________________________________________________________________')
