@@ -106,14 +106,8 @@ if __name__=='__main__':
 
         all_pairs = pairs_real_real + pairs_real_fake + pairs_fake_fake
 
-        del pairs_real_real[:]
-        del pairs_real_fake[:]
-        del pairs_fake_fake[:]
-        del data[:]
-        del raw_data_list[:]
-
         pool_input = [(input_pair, data_list) for input_pair in all_pairs]
-        with multiprocessing.Pool(maxtasksperchild=1000) as pool:
+        with multiprocessing.Pool() as pool:
             pool_output = pool.starmap(mp_func, pool_input)
 
         with open(f'Results/Dump/{spec}_PW_MFE.pickle', 'wb') as handle2:
