@@ -17,7 +17,6 @@ bases = ['A','G','C','T']
 safe = ['A','G','C','T', '-', '.']
 pair_combs = ['AA','AG','AC','AT','GA','GG','GC','GT','CA','CG','CC','CT','TA','TG','TC','TT']
 blanks = ['-','.']
-species = ['Bacteroidota']
 
 def setup(raw_seq, pair):
     editable_seq = list(raw_seq)
@@ -127,6 +126,7 @@ def run_ecoli(path='data/4ybb.fasta', max_iter=6, total=60):
             ecoli_seq.append(ecoli_seq_raw[ind])
 
     all_ecoli_pairs = list(itertools.combinations(ecoli_psxns, 2))
+    all_ecoli_pairs = [(ecoli_psxns.index(a), ecoli_psxns.index(b)) for a,b in all_ecoli_pairs]
     rd.shuffle(all_ecoli_pairs)
     rd.shuffle(all_ecoli_pairs)
     rd.shuffle(all_ecoli_pairs)
