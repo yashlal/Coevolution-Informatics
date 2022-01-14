@@ -139,7 +139,7 @@ def run_ecoli(path='data/4ybb.fasta', max_iter=6, total=60):
         itervar2 = int((iter_num+1)*chunskize)
         iter_pairs = ecoli_pairs[itervar1:itervar2]
 
-        pool_input = [(ecoli_seq, ecoli_pair) for ecoli_pair in all_ecoli_pairs]
+        pool_input = [(ecoli_seq, ecoli_pair) for ecoli_pair in iter_pairs]
         with multiprocessing.Pool() as pool:
             pool_output = pool.starmap(ecoli_mp_func, pool_input)
 
