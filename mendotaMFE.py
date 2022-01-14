@@ -73,12 +73,13 @@ def mp_func(pair, data_list):
         return (pair, vals)
 
 def ecoli_mp_func(ecoli_seq, ecoli_pair):
+    print(ecoli_pair)
     all_seqs = all_mutations_pair(ecoli_seq, ecoli_pair)
     vals = run_pair(all_seqs)
 
     return (ecoli_pair, vals)
 
-def run_specs(species, cap=10000):
+def run_specs(species=['Cyanobacteria'], cap=10000):
     for spec in species:
         with open(f'data/SILVA_138.1_{spec}.pickle', 'rb') as handle1:
             data_list = pickle.load(handle1)
@@ -116,7 +117,7 @@ def run_specs(species, cap=10000):
         print("End Time: ", date_time)
         print('____________________________________________________________________________')
 
-def run_ecoli(path='data/4ybb.fasta', max_iter=6, total=150):
+def run_ecoli(path='data/4ybb.fasta', max_iter=6, total=2400):
     ecoli_seq_raw = str(list(SeqIO.parse(path, 'fasta'))[0].seq)
     ecoli_psxns = []
     ecoli_seq = []
@@ -132,11 +133,13 @@ def run_ecoli(path='data/4ybb.fasta', max_iter=6, total=150):
 
     iter_num=0
     while iter_num<max_iter:
+        print(f'{iter_num}/{max_iter}')
         itervar1 = int(iter_num*chunskize)
         itervar2 = int(iter_num*(chunskize+1))
         iter_pairs = ecoli_pairs[itervar1:itervar2]
 
         pool_input = [(ecoli_seq, ecoli_pair) for ecoli_pair in all_ecoli_pairs]
+        print(f'pool input is: {pool_input}')
         with multiprocessing.Pool() as pool:
             pool_output = pool.starmap(ecoli_mp_func, pool_input)
 
