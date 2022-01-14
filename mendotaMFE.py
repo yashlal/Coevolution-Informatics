@@ -131,7 +131,7 @@ def run_ecoli(path='data/4ybb.fasta', max_iter=6, total=150):
     ecoli_pairs = rd.sample(all_ecoli_pairs, total)
 
     iter_num=0
-    while iter_num<max:
+    while iter_num<max_iter:
         itervar1 = int(iter_num*chunskize)
         itervar2 = int(iter_num*(chunskize+1))
         iter_pairs = ecoli_pairs[itervar1:itervar2]
