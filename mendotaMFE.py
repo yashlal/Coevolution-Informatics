@@ -72,12 +72,13 @@ def mp_func(pair, data_list):
 
         return (pair, vals)
 
-if __name__=='__main__':
-    #printing start time
-    now = datetime.now()
-    date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-    print("STARTING:", date_time)
+def ecoli_mp_func(ecoli_seq, ecoli_pair):
+    all_seqs = all_mutations_pair(ecoli_seq, ecoli_pair)
+    vals = run_pair(all_seqs)
 
+    return (ecoli_pair, vals)
+
+def run_specs(species, cap=10000):
     for spec in species:
         with open(f'data/SILVA_138.1_{spec}.pickle', 'rb') as handle1:
             data_list = pickle.load(handle1)
@@ -94,8 +95,6 @@ if __name__=='__main__':
         pairs_real_real = list(itertools.combinations(sites,2))
         pairs_real_fake = list(itertools.product(sites, nonsites))
         pairs_fake_fake = list(itertools.combinations(nonsites,2))
-
-        cap = 10000
 
         pairs_real_real = rd.sample(pairs_real_real, min(cap, len(pairs_real_real)))
         pairs_real_fake = rd.sample(pairs_real_fake, min(cap, len(pairs_real_fake)))
@@ -116,3 +115,46 @@ if __name__=='__main__':
         date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
         print("End Time: ", date_time)
         print('____________________________________________________________________________')
+
+def run_ecoli(path='data/4ybb.fasta', max_iter=6, total=150):
+    ecoli_seq_raw = str(list(SeqIO.parse(path, 'fasta'))[0].seq)
+    ecoli_psxns = []
+    ecoli_seq = []
+
+    for ind in range(len(ecoli_seq_raw)):
+        if ecoli_seq_raw[ind] in bases:
+            ecoli_psxns.append(ind)
+            ecoli_seq.append(ecoli_seq_raw[ind])
+
+    all_ecoli_pairs = list(itertools.combinations(ecoli_psxns, 2))
+    chunskize = total / max_iter
+    ecoli_pairs = rd.sample(all_ecoli_pairs, total)
+
+    iter_num=0
+    while iter_num<max:
+        itervar1 = int(iter_num*chunskize)
+        itervar2 = int(iter_num*(chunskize+1))
+        iter_pairs = ecoli_pairs[itervar1:itervar2]
+
+        pool_input = [(ecoli_pair, ecoli_seq) for ecoli_pair in all_ecoli_pairs]
+        with multiprocessing.Pool() as pool:
+            pool_output = pool.starmap(ecoli_mp_func, pool_input)
+
+        with open(f'Results/Dump/ecoli_{iter_num}.pickle', 'wb') as ecoli_handle:
+            pickle.dump(pool_output, ecoli_handle)
+
+        print('____________________________________________________________________________')
+        print(f'E.Coli {iter_num}/{max} IS FINISHED')
+        now = datetime.now()
+        date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+        print("End Time: ", date_time)
+        print('____________________________________________________________________________')
+        iter_num += 1
+
+if __name__=='__main__':
+    #printing start time
+    now = datetime.now()
+    date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+    print("STARTING:", date_time)
+
+    run_ecoli()
