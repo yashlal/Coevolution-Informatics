@@ -115,7 +115,7 @@ def run_specs(species=['Cyanobacteria'], cap=10000):
         print("End Time: ", date_time)
         print('____________________________________________________________________________')
 
-def run_ecoli(path='data/4ybb.fasta', max_iter=6, total=60):
+def run_ecoli(path='data/4ybb.fasta', max_iter=6, total=30000):
     ecoli_seq_raw = str(list(SeqIO.parse(path, 'fasta'))[0].seq)
     ecoli_psxns = []
     ecoli_seq = []
@@ -147,7 +147,7 @@ def run_ecoli(path='data/4ybb.fasta', max_iter=6, total=60):
             pickle.dump(pool_output, ecoli_handle)
 
         print('____________________________________________________________________________')
-        print(f'E.Coli {iter_num}/{max} IS FINISHED')
+        print(f'E.Coli {iter_num+1}/{max_iter} IS FINISHED')
         now = datetime.now()
         date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
         print("End Time: ", date_time)
