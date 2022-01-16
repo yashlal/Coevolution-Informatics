@@ -126,6 +126,7 @@ def ecoli_figures(type='hist'):
 
     vars = [var1,var2,var3]
     paths = ['Results/NewFigs/EColi/DistHist', 'Results/NewFigs/EColi/MFEAddHist', 'Results/NewFigs/EColi/MFECompHist']
+    names = ['Distance', 'MFE Metric 1', 'MFE Metric 2']
 
     if type=='hist':
         for n in range(3):
@@ -139,13 +140,17 @@ def ecoli_figures(type='hist'):
             bins_input = np.arange(math.floor(min(var)), math.ceil(max(var)), d)
 
             a, b, c = plt.hist(var, bins=bins_input)
-
+            plt.xlabel(f'{names[n]}')
+            plt.ylabel('Frequency')
             plt.savefig(f'{paths[n]}/hist_nozero.png')
-            plt.savefig(f'{paths[n]}/hist_nozero.eps', format='eps')
             plt.clf()
+
 
     elif type=='loglin':
         for n in range(3):
+
+            labels = [('Frequency', 'Distance'), ('MFE Metric 1', 'log(frequency)'), ('MFE Metric 2', 'log(frequency)')]
+
             var = vars[n]
 
             if n == 0:
@@ -164,10 +169,60 @@ def ecoli_figures(type='hist'):
                     X.append(b[i])
                     Y.append(np.log(a[i]))
 
+            X=np.array(X)
+            Y=np.array(Y)
+            slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(X, Y)
+            print(slope,intercept,r_value)
+            plt.plot(X, slope*X+intercept)
             plt.scatter(X,Y)
+            plt.xlabel(f'{labels[n][0]}')
+            plt.ylabel(f'{labels[n][1]}')
             plt.show()
+
+    elif type=='loglog':
+        for n in range(3):
+            labels = [('Frequency', 'Distance'), ('log(MFE Metric 1)', 'log(frequency)'), ('log(MFE Metric 2)', 'log(frequency)')]
+
+            var = vars[n]
+
+            if n == 0:
+                d = 0.1
+            else:
+                d = 0.05
+                var = list(filter(lambda x: x>0.001, var))
+            bins_input = np.arange(math.floor(min(var)), math.ceil(max(var)), d)
+
+            a, b, c = plt.hist(var, bins=bins_input)
+            plt.clf()
+
+            X, Y = [], []
+            for i in range(len(a)):
+                if a[i]!=0:
+                    X.append(np.log(b[i]))
+                    Y.append(np.log(a[i]))
+
+            X=np.array(X)
+            Y=np.array(Y)
+            slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(X, Y)
+            print(slope,intercept,r_value)
+            plt.plot(X, slope*X+intercept)
+            plt.scatter(X,Y)
+            plt.xlabel(f'{labels[n][0]}')
+            plt.ylabel(f'{labels[n][1]}')
+            plt.show()
+
+    elif type=='scatter':
+        for n in range(2):
+            var = vars[n+1]
+            X = vars[0]
+            Y = vars[n+1]
+            plt.scatter(X,Y)
+            plt.xlabel('Distance')
+            plt.ylabel(f'MFE Metric {n+1}')
+            plt.show()
+
     else:
         pass
 
 if __name__=='__main__':
-    ecoli_figures('loglin')
+    ecoli_figures('hist')
