@@ -236,9 +236,13 @@ def ecoli_figures(type='hist'):
 
     elif type=='old_scatter':
         for n in range(2):
+            X=vars[0]
             Y=vars[n+1]
+            plt.scatter(X,Y)
+            plt.show()
+
     else:
         pass
 
 if __name__=='__main__':
-    ecoli_figures('scatter')
+    ecoli_figures('old_scatter')
