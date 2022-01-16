@@ -11,6 +11,8 @@ import numpy as np
 from collections import Counter
 import scipy.stats
 import math
+import seaborn as sb
+import pandas as pd
 
 pair_combs = ['AA','AG','AC','AT','GA','GG','GC','GT','CA','CG','CC','CT','TA','TG','TC','TT']
 pairs = ['A','G','C','T']
@@ -146,6 +148,7 @@ def ecoli_figures(type='hist'):
             plt.clf()
 
 
+
     elif type=='loglin':
         for n in range(3):
 
@@ -156,7 +159,7 @@ def ecoli_figures(type='hist'):
             if n == 0:
                 d = 0.1
             else:
-                d = 0.05
+                d = 0.3
                 var = list(filter(lambda x: x>0.001, var))
             bins_input = np.arange(math.floor(min(var)), math.ceil(max(var)), d)
 
@@ -212,17 +215,30 @@ def ecoli_figures(type='hist'):
             plt.show()
 
     elif type=='scatter':
+        data = []
+        metric_labels = ['Additivity', 'Compensating Mutation']
         for n in range(2):
             var = vars[n+1]
             X = vars[0]
             Y = vars[n+1]
-            plt.scatter(X,Y)
-            plt.xlabel('Distance')
-            plt.ylabel(f'MFE Metric {n+1}')
-            plt.show()
 
+            width = 10
+            bin_edges = np.arange(0,230,width)
+
+            for edge_int in range(len(bin_edges)):
+                for i in range(len(Y)):
+                    if bin_edges[edge_int]<=X[i]<(bin_edges[edge_int]+width):
+                        data.append((bin_edges[edge_int], Y[i], metric_labels[n]))
+
+        df = pd.DataFrame(data, columns=['Distance', 'mean(MFE Metric)', 'MFE Metric'])
+        sb.lineplot(x='Distance', y='mean(MFE Metric)', ci='sd', hue='MFE Metric', data=df)
+        plt.show()
+
+    elif type=='old_scatter':
+        for n in range(2):
+            Y=vars[n+1]
     else:
         pass
 
 if __name__=='__main__':
-    ecoli_figures('hist')
+    ecoli_figures('scatter')
