@@ -165,8 +165,7 @@ def spec_pairwise_MI_MFE_mp_func(col1, col2, seq, pxns):
 
     return list(modules.flatten([entr_result, vals]))
 
-def spec_pairwise_MI_MFE(ecoli_path='data/4ybb.fasta', spec='', n=10000, save=5000):
-    #1. choose pairs from ecoli
+def spec_pairwise_MI_MFE(ecoli_path='data/4ybb.fasta', spec='Fusobacteriota', n=10000, save=5000):
     ecoli_seq_raw = str(list(SeqIO.parse(ecoli_path, 'fasta'))[0].seq)
     ecoli_psxns = []
 
@@ -212,8 +211,16 @@ def spec_pairwise_MI_MFE(ecoli_path='data/4ybb.fasta', spec='', n=10000, save=50
         with open(f'Results/dump/{spec}_loop.pickle', 'wb') as handle:
             pickle.dump(pool_output, handle)
 
+        now = datetime.now()
+        date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+        print(f'Finished {spec}: {loop+1}/{iter_number}')
+        print(date_time)
+        print('______________________________________________')
+
 if __name__=='__main__':
     #printing start time
     now = datetime.now()
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
     print("STARTING:", date_time)
+
+    spec_pairwise_MI_MFE(spec='Fusobacteriota', n=200, save=100)
