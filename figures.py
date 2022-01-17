@@ -41,8 +41,8 @@ def mfe_metrics(values_list):
                     metric_val = E_ab-(E_a+E_b)
                     sum += metric_val
 
-                    possibilities.append(abs(E_ab))
-    return abs(sum/9), min(possibilities)
+                    possibilities.append(metric_val)
+    return sum/9, min(possibilities)
 
 def get_dist_and_mfe_metric(items, coords, ref_l):
     all_dist = []
@@ -148,7 +148,6 @@ def ecoli_figures(type='hist'):
             plt.clf()
 
 
-
     elif type=='loglin':
         for n in range(3):
 
@@ -214,7 +213,7 @@ def ecoli_figures(type='hist'):
             plt.ylabel(f'{labels[n][1]}')
             plt.show()
 
-    elif type=='scatter':
+    elif type=='scattershade':
         data = []
         metric_labels = ['Additivity', 'Compensating Mutation']
         for n in range(2):
@@ -245,4 +244,4 @@ def ecoli_figures(type='hist'):
         pass
 
 if __name__=='__main__':
-    ecoli_figures('old_scatter')
+    ecoli_figures('scattershade')

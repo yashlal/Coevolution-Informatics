@@ -11,12 +11,12 @@ import pandas as pd
 from datetime import datetime
 import itertools
 import RNA
+import modules
+import algorithm
 import math
 
 bases = ['A','G','C','T']
-safe = ['A','G','C','T', '-', '.']
 pair_combs = ['AA','AG','AC','AT','GA','GG','GC','GT','CA','CG','CC','CT','TA','TG','TC','TT']
-blanks = ['-','.']
 
 def setup(raw_seq, pair):
     editable_seq = list(raw_seq)
@@ -154,10 +154,66 @@ def run_ecoli(path='data/4ybb.fasta', max_iter=6, total=30000):
         print('____________________________________________________________________________')
         iter_num += 1
 
+def spec_pairwise_MI_MFE_mp_func(col1, col2, seq, pxns):
+    #1. get Ha, Hb, Hab
+    entr_result = modules.mutual_inf_MP_new(col1, col2)
+
+    #2. Do mfe run on the seq
+    clean_seq, converted_pair = setup(seq, pxns)
+    all_seqs = all_mutations_pair(clean_seq, converted_pair)
+    vals = run_pair(all_seqs)
+
+    return list(modules.flatten([entr_result, vals]))
+
+def spec_pairwise_MI_MFE(ecoli_path='data/4ybb.fasta', spec='', n=10000, save=5000):
+    #1. choose pairs from ecoli
+    ecoli_seq_raw = str(list(SeqIO.parse(ecoli_path, 'fasta'))[0].seq)
+    ecoli_psxns = []
+
+    for ind in range(len(ecoli_seq_raw)):
+        if ecoli_seq_raw[ind] in bases:
+            ecoli_psxns.append(ind)
+
+    all_pairs = list(itertools.combinations(ecoli_psxns, 2))
+
+    rd.shuffle(all_pairs)
+    rd.shuffle(all_pairs)
+    rd.shuffle(all_pairs)
+
+    full_sample = rd.sample(all_pairs, n)
+    iter_number = int(n/save)
+
+    spec_path = f'data/SILVA_138.1_{spec}.fasta'
+    MSA = [str(sample.seq) for sample in list(SeqIO.parse(spec_path, 'fasta'))]
+    MSA = algorithm.preprocess(MSA)
+
+    for loop in range(iter_number):
+        lower_bound = int(loop*save)
+        upper_bound = int((loop+1)*save)
+
+        loop_pairs = full_sample[lower_bound:upper_bound]
+
+        pool_input = []
+        for pair in loop_pairs:
+            c=0
+            flag=False
+            while (not flag) and (c<len(MSA)):
+                if (MSA[c][pair[0]] in bases) and (MSA[c][pair[1]] in bases):
+                    col1 = ''.join([seq[pair[0]] for seq in MSA])
+                    col2 = ''.join([seq[pair[1]] for seq in MSA])
+                    pool_input.append((col1, col2, MSA[c], pair))
+                    flag=True
+                else:
+                    c += 1
+
+        with multiprocessing.Pool() as pool:
+            pool_output = pool.starmap(spec_pairwise_MI_MFE_mp_func, pool_input)
+
+        with open(f'Results/dump/{spec}_loop.pickle', 'wb') as handle:
+            pickle.dump(pool_output, handle)
+
 if __name__=='__main__':
     #printing start time
     now = datetime.now()
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
     print("STARTING:", date_time)
-
-    run_ecoli()

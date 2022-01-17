@@ -56,6 +56,17 @@ def mutual_inf_MP(X, Y, ind1, ind2):
 
     return [ind1, ind2, calc]
 
+def mutual_inf_MP_new(X, Y):
+    if type(X[0])!=list:
+        X=[X]
+    if type(Y[0])!=list:
+        Y=[Y]
+    H_x = joint_entr(*X)
+    H_y = joint_entr(*Y)
+    H_xy = joint_entr(*X, *Y)
+
+    return [H_x, H_y, H_xy]
+
 def inv_across_envs(*args):
     cnt = Counter(flatten(args))
     shared_items = [k for k, v in cnt.items() if v > 1]
