@@ -208,7 +208,7 @@ def spec_pairwise_MI_MFE(ecoli_path='data/4ybb.fasta', spec='Fusobacteriota', n=
         with multiprocessing.Pool() as pool:
             pool_output = pool.starmap(spec_pairwise_MI_MFE_mp_func, pool_input)
 
-        with open(f'Results/dump/{spec}_loop.pickle', 'wb') as handle:
+        with open(f'Results/Dump/{spec}_{loop}.pickle', 'wb') as handle:
             pickle.dump(pool_output, handle)
 
         now = datetime.now()
@@ -221,6 +221,15 @@ if __name__=='__main__':
     #printing start time
     now = datetime.now()
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-    print("STARTING:", date_time)
+    print("STARTING Fuso", date_time)
+    spec_pairwise_MI_MFE(spec='Fusobacteriota', n=10000, save=2500)
 
-    spec_pairwise_MI_MFE(spec='Fusobacteriota', n=200, save=100)
+    now = datetime.now()
+    date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+    print("STARTING Cyano", date_time)
+    spec_pairwise_MI_MFE(spec='Cyanobacteria', n=10000, save=2500)
+
+    now = datetime.now()
+    date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+    print("STARTING Bacters", date_time)
+    spec_pairwise_MI_MFE(spec='Bacteroidota', n=10000, save=2500)
