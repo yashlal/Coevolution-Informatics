@@ -163,7 +163,7 @@ def spec_pairwise_MI_MFE_mp_func(col1, col2, seq, pxns):
     all_seqs = all_mutations_pair(clean_seq, converted_pair)
     vals = run_pair(all_seqs)
 
-    return list(modules.flatten([entr_result, vals]))
+    return list(modules.flatten([pxns, entr_result, vals]))
 
 def spec_pairwise_MI_MFE(ecoli_path='data/4ybb.fasta', spec='Fusobacteriota', n=10000, save=5000):
     ecoli_seq_raw = str(list(SeqIO.parse(ecoli_path, 'fasta'))[0].seq)
@@ -208,7 +208,7 @@ def spec_pairwise_MI_MFE(ecoli_path='data/4ybb.fasta', spec='Fusobacteriota', n=
         with multiprocessing.Pool() as pool:
             pool_output = pool.starmap(spec_pairwise_MI_MFE_mp_func, pool_input)
 
-        with open(f'Results/Dump/{spec}_{loop}.pickle', 'wb') as handle:
+        with open(f'Results/Dump/2{spec}_{loop}.pickle', 'wb') as handle:
             pickle.dump(pool_output, handle)
 
         now = datetime.now()
