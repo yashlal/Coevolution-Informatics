@@ -94,7 +94,7 @@ def run_specs(species=['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota'], cap=3
         with multiprocessing.Pool() as pool:
             pool_output = pool.starmap(mp_func, pool_input)
 
-        with open(f'Results/Dump/{spec}_PW_MFE.pickle', 'wb') as handle2:
+        with open(f'Results/Dump/{spec}_sites_MFE.pickle', 'wb') as handle2:
             pickle.dump(pool_output, handle2)
 
         print('____________________________________________________________________________')
