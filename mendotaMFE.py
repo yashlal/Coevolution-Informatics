@@ -210,5 +210,5 @@ if __name__=='__main__':
     #printing start time
     now = datetime.now()
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-
+    print(date_time)
     run_specs()
