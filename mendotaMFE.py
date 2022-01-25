@@ -77,7 +77,7 @@ def ecoli_mp_func(ecoli_seq, ecoli_pair):
 
     return (ecoli_pair, vals)
 
-def run_specs(species=['Cyanobacteria'], cap=10000):
+def run_specs(species=['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota'], cap=3000):
     for spec in species:
         with open(f'data/SILVA_138.1_{spec}.pickle', 'rb') as handle1:
             data_list = pickle.load(handle1)
@@ -85,23 +85,12 @@ def run_specs(species=['Cyanobacteria'], cap=10000):
             b = pickle.load(handle2)[0.95]
 
         sites = list(modules.flatten(list(filter(lambda x: type(x)==list, b))))
-        b = list(modules.flatten(b))
-        nonsites = []
-        for x in b:
-            if x not in sites:
-                nonsites.append(x)
 
         pairs_real_real = list(itertools.combinations(sites,2))
-        pairs_real_fake = list(itertools.product(sites, nonsites))
-        pairs_fake_fake = list(itertools.combinations(nonsites,2))
 
         pairs_real_real = rd.sample(pairs_real_real, min(cap, len(pairs_real_real)))
-        pairs_real_fake = rd.sample(pairs_real_fake, min(cap, len(pairs_real_fake)))
-        pairs_fake_fake = rd.sample(pairs_fake_fake, min(cap, len(pairs_fake_fake)))
 
-        all_pairs = pairs_real_real + pairs_real_fake + pairs_fake_fake
-
-        pool_input = [(input_pair, data_list) for input_pair in all_pairs]
+        pool_input = [(input_pair, data_list) for input_pair in pairs_real_real]
         with multiprocessing.Pool() as pool:
             pool_output = pool.starmap(mp_func, pool_input)
 
@@ -221,15 +210,5 @@ if __name__=='__main__':
     #printing start time
     now = datetime.now()
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-    print("STARTING Fuso", date_time)
-    spec_pairwise_MI_MFE(spec='Fusobacteriota', n=10000, save=2500)
 
-    now = datetime.now()
-    date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-    print("STARTING Cyano", date_time)
-    spec_pairwise_MI_MFE(spec='Cyanobacteria', n=10000, save=2500)
-
-    now = datetime.now()
-    date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-    print("STARTING Bacters", date_time)
-    spec_pairwise_MI_MFE(spec='Bacteroidota', n=10000, save=2500)
+    run_specs()
