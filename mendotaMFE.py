@@ -77,32 +77,30 @@ def ecoli_mp_func(ecoli_seq, ecoli_pair):
 
     return (ecoli_pair, vals)
 
-def run_specs(species=['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota'], cap=3000):
+def run_specs(species=['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota'], epsilon=0.116, gamma=0.95):
     for spec in species:
         with open(f'data/SILVA_138.1_{spec}.pickle', 'rb') as handle1:
             data_list = pickle.load(handle1)
-        with open(f'Results/AlgE0.232/{spec}Results_E_0.232.pickle', 'rb') as handle2:
-            b = pickle.load(handle2)[0.95]
+        with open(f'Results/AlgE{epsilon}/{spec}Results_E_{epsilon}.pickle', 'rb') as handle2:
+            b = pickle.load(handle2)[gamma]
 
-        sites = list(modules.flatten(list(filter(lambda x: type(x)==list, b))))
+        sites = (list(filter(lambda x: type(x)==list, b)))
 
-        pairs_real_real = list(itertools.combinations(sites,2))
-
-        pairs_real_real = rd.sample(pairs_real_real, min(cap, len(pairs_real_real)))
+        pairs_real_real = []
+        for cluster in sites:
+            [pairs_real_real.append(i) for i in list(itertools.combinations(cluster,2))]
 
         pool_input = [(input_pair, data_list) for input_pair in pairs_real_real]
         with multiprocessing.Pool() as pool:
             pool_output = pool.starmap(mp_func, pool_input)
 
-        with open(f'Results/Dump/{spec}_sites_MFE.pickle', 'wb') as handle2:
+        with open(f'Results/Dump/2{spec}_sites_MFE_E{epsilon}_G{gamma}.pickle', 'wb') as handle2:
             pickle.dump(pool_output, handle2)
 
-        print('____________________________________________________________________________')
-        print(f'{spec} IS FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        print(f'Completed {spec} with Epsilon {epsilon} and Gamma {gamma}')
         now = datetime.now()
         date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
         print("End Time: ", date_time)
-        print('____________________________________________________________________________')
 
 def run_ecoli(path='data/4ybb.fasta', max_iter=6, total=30000):
     ecoli_seq_raw = str(list(SeqIO.parse(path, 'fasta'))[0].seq)
@@ -211,4 +209,14 @@ if __name__=='__main__':
     now = datetime.now()
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
     print(date_time)
-    run_specs()
+    run_specs(species=['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota'], epsilon=0.116, gamma=0.95)
+    run_specs(species=['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota'], epsilon=0.116, gamma=0.90)
+    run_specs(species=['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota'], epsilon=0.116, gamma=0.85)
+
+    run_specs(species=['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota'], epsilon=0.232, gamma=0.95)
+    run_specs(species=['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota'], epsilon=0.232, gamma=0.90)
+    run_specs(species=['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota'], epsilon=0.232, gamma=0.85)
+
+    run_specs(species=['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota'], epsilon=1.16, gamma=0.95)
+    run_specs(species=['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota'], epsilon=1.16, gamma=0.90)
+    run_specs(species=['Fusobacteriota', 'Cyanobacteria', 'Bacteroidota'], epsilon=1.16, gamma=0.85)

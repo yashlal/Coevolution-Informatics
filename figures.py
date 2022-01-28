@@ -40,8 +40,7 @@ def mfe_metrics(values_list):
                     metric_val = E_ab-(E_a+E_b)
                     sum += metric_val
 
-                    possibilities.append(abs(E_a))
-                    possibilities.append(abs(E_b))
+                    possibilities.append(abs(E_ab))
 
     return max(possibilities)
 
@@ -82,7 +81,7 @@ def ecoli_get_dist_and_mfe_metric(items, coords, ref_l, flag=True):
 
     return all_dist, all_mfe
 
-def spec_figures(spec='Cyanobacteria', n=10000):
+def old_spec_figures(spec='Cyanobacteria', n=10000):
 
     with open(f'Results/Dump/{spec}_PW_MFE.pickle', 'rb') as handle:
         b = pickle.load(handle)
@@ -247,41 +246,48 @@ def ecoli_figures(type='hist'):
     else:
         pass
 
-def spec_figures(spec='Cyanobacteria'):
+def spec_figures(specs=['Bacteroidota', 'Fusobacteriota', 'Cyanobacteria']):
     all_spec_data = []
-    for n in range(4):
-        with open(f'Results/Dump/2{spec}_{n}.pickle', 'rb') as handle:
+    for spec in specs:
+        with open(f'Results/Dump/{spec}_sites_MFE.pickle', 'rb') as handle:
             b = pickle.load(handle)
             [all_spec_data.append(_) for _ in b]
 
-    all_mi = []
-    all_spec_input = []
+    all_spec_data = list(filter(lambda x: x[1]!='SKIP', all_spec_data))
+
+    all_vals = []
     for el in all_spec_data:
+        vals = el[1]
+        all_vals.append(vals)
+
+    all_spec_data2 = []
+    for spec in specs:
+        for n in range(4):
+            with open(f'Results/Dump/2{spec}_{n}.pickle', 'rb') as handle:
+                b = pickle.load(handle)
+                [all_spec_data2.append(_) for _ in b]
+
+    all_vals2 = []
+    for el in all_spec_data2:
         mi = el[2]+el[3]-el[4]
-        vals = el[5:]
-        pair = (el[0],el[1])
 
-        all_mi.append(mi)
-        all_spec_input.append([pair, vals])
+        if mi<0.001:
+            vals = el[5:]
+            all_vals2.append(vals)
 
-    coords, ref_l = get_reference_dist()
-    spec_dist, spec_mfe = get_dist_and_mfe_metric(all_spec_input, coords, ref_l)
+    all_mfe1 = [mfe_metrics(val_el) for val_el in all_vals]
+    all_mfe2 = [mfe_metrics(val_el2) for val_el2 in all_vals2]
 
-    var_dist = spec_dist
-    var_mi = all_mi
-    var_mfe = spec_mfe
+    all_max = max([max(all_mfe1), max(all_mfe2)])
+    all_min = min([min(all_mfe1), min(all_mfe2)])
+    custom_step = (all_max-all_min)/10
 
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
+    custom_bins = np.arange(all_min, all_max, custom_step)
 
-    ax.scatter(var_dist, var_mi, var_mfe)
-
-    ax.set_xlabel('Distance')
-    ax.set_ylabel('Mutual Information')
-    ax.set_zlabel('MFE')
-
+    plt.hist(all_mfe1, bins=custom_bins, density=True, label='Sites', fill=False, edgecolor='red')
+    plt.hist(all_mfe2, bins=custom_bins, density=True, label='MI Zero', fill=False, edgecolor='blue')
+    plt.legend(loc='upper right')
     plt.show()
 
-
 if __name__=='__main__':
-    spec_figures(spec='Fusobacteriota')
+    spec_figures()
