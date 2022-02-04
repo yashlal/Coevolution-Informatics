@@ -10,7 +10,7 @@ from tqdm.contrib.concurrent import process_map
 import pandas as pd
 from datetime import datetime
 import itertools
-import RNA
+# import RNA
 import modules
 import algorithm
 import math
