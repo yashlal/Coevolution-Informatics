@@ -80,7 +80,7 @@ all_data = []
 
 if __name__=='__main__':
     epsilons = [0.116,0.232,1.16]
-    gammas = [0.95, 0.90, 0.85, 0.80, 0.75, 0.70]
+    gammas = [0.95, 0.9, 0.85]
     for epsilon in epsilons:
         for gamma in gammas:
 
