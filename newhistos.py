@@ -116,6 +116,7 @@ if __name__=='__main__':
 
             l = [hp1,hp2,a,b,c,p1,p2]
             all_data.append(l)
+            print(l)
 
 with open('p_values.pickle', 'rb') as handle:
     pickle.dump(all_data, handle)
